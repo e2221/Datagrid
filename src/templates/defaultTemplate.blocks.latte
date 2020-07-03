@@ -1,0 +1,283 @@
+{templateType e2221\Datagrid\DatagridTemplate}
+
+{* table-open-tag *}
+{define table-open-tag}
+    {if $documentTemplate->responsive}<div class="table-responsive">{/if}
+        <table class="{$documentTemplate->tableClass}{$documentTemplate->hover ? ' table-hover'}{$documentTemplate->borderless ? ' table-borderless'}{$documentTemplate->stripped ? ' table-striped'}{$documentTemplate->border ? ' table-bordered'}">
+{/define}
+
+{* table close *}
+{define table-close-tag}
+        </table>
+    {if $documentTemplate->responsive}</div>{/if}
+{/define}
+
+{* row-head-columns hide hidden fields *}
+{define row-head-columns}
+    {if !$documentTemplate->hideTableHeader}
+    <tr class="grid-columns">
+        {ifset $form[actions]}
+            <th class="grid-col-global-actions">
+                <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" onclick="{*checkAllCheckboxesByName(this, 'actions[items][]')*}" title="Select All">
+            </th>
+        {/ifset}
+        {foreach $columns as $column}
+            {continueIf $column->isHidden()}
+            <th class="grid-col-{$column->name}">
+                {if $column->canSort()}
+                    <a href="{link sort! orderColumn => $column->name, orderType => $column->getNewState()}" class="ajax">{$column->label}</a>
+                    {if $column->isAsc()}
+                        <span class="grid-sort-symbol grid-sort-symbol-asc"><em>&#9650;</em></span>
+                    {elseif $column->isDesc()}
+                        <span class="grid-sort-symbol grid-sort-symbol-desc"><em>&#9660;</em></span>
+                    {else}
+                        <span class="grid-sort-symbol grid-sort-symbol-no"></span>
+                    {/if}
+                {else}
+                    {$column->label}
+                {/if}
+            </th>
+        {/foreach}
+        {if $hasActionsColumn}
+            <th class="grid-col-actions">
+                {include #global-custom-actions}
+            </th>
+        {/if}
+    </tr>
+    {/if}
+{/define}
+
+
+{* row-head-filter hide hidden fields*}
+{define row-head-filter}
+    <tr class="grid-filters">
+        {ifset $form[actions]}
+            <th class="grid-col-global-actions"></th>
+        {/ifset}
+        {formContainer filter}
+            {foreach $columns as $column}
+                {continueIf $column->isHidden()}
+                <th class="grid-col-{$column->name}">
+                    {if isset($form['filter'][$column->name])}
+                        {ifset #col-filter-{$column->name}}
+                            {include #"col-filter-{$column->name}" column => $column}
+                        {else}
+                            {include #col-filter column => $column}
+                        {/ifset}
+                    {/if}
+                </th>
+            {/foreach}
+            <th class="grid-col-actions">
+                {include #global-filter-actions showCancel => $showFilterCancel}
+            </th>
+        {/formContainer}
+    </tr>
+{/define}
+
+{* row
+   + row item detail
+*}
+{define row}
+    <tr id={$rowId}>
+        {include #row-inner row => $row}
+    </tr>
+    {ifset $rowActionItemDetail}
+        {var $colspan = count($columns) + $hasGlobalActionsColumn + $hasActionsColumn}
+        {include #row-item-detail-tr row => $row, primary => $primary, colspan => $colspan, itemDetailId => $itemDetailId}
+        <tr>
+            <td class="d-none" colspan="{=count($columns) + $hasGlobalActionsColumn + $hasActionsColumn}"></td>
+        </tr>
+    {/ifset}
+{/define}
+
+
+{* row-inner hide hidden fields *}
+{define row-inner}
+    {var $primary = $control->getter($row, $rowPrimaryKey)}
+    {php if (!$sendOnlyRowParentSnippet): $this->global->snippetDriver->enter("rows-$primary", "dynamic"); endif;}
+
+    {var $editRow = $editRowKey == $primary && $primary !== NULL && $editRowKey !== NULL}
+    {ifset $form[actions]}
+        <td class="grid-col-global-actions">
+            {formContainer actions}
+                {input items:$primary class => $uniqueHash}
+            {/formContainer}
+        </td>
+    {/ifset}
+    {foreach $columns as $column}
+        {continueIf $column->isHidden()}
+        {var $cell = $control->getter($row, $column->name, FALSE)}
+        {if $editRow && $column->name != $rowPrimaryKey && (isset($form['edit'][$column->name]) || isset($this->blockQueue["cell-edit-{$column->name}"]))}
+            <td class="grid-col-{$column->name}">
+                {ifset #cell-edit-$column->name}
+                    {include #"cell-edit-{$column->name}" form => $form, column => $column, row => $row}
+                {else}
+                    {formContainer edit}
+                        {input $column->name}
+                        {if $form[edit][$column->name]->hasErrors()}
+                            <p class="error" n:foreach="$form[edit][$column->name]->getErrors() as $error">{$error}</p>
+                        {/if}
+                    {/formContainer}
+                {/ifset}
+            </td>
+        {else}
+            {ifset #col-$column->name}
+                {include #"col-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
+            {else}
+                <td class="grid-col-{$column->name}">
+                    {ifset #cell-$column->name}
+                        {include #"cell-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
+                    {else}
+                        {$column->render($row, $primary, $cell)}
+                    {/ifset}
+                </td>
+            {/ifset}
+        {/if}
+    {/foreach}
+
+    {if $hasActionsColumn}
+        <td class="grid-col-actions">
+            {if $editRow}
+                {formContainer edit}
+                    {input $rowPrimaryKey class => 'grid-primary-value'}
+                    {include #row-actions-edit row => $row, primary => $primary}
+                {/formContainer}
+            {else}
+                {ifset #row-actions}
+                    {include #row-actions row => $row, primary => $primary}
+                {elseif $control->getEditFormFactory()}
+                    {include #row-actions-edit-link row => $row, primary => $primary}
+                {/ifset}
+            {/if}
+        </td>
+    {/if}
+    {php if (!$sendOnlyRowParentSnippet): $this->global->snippetDriver->leave(); endif;}
+{/define}
+
+
+{* row-actions-edit *}
+{define row-actions-edit}
+    {$rowActionSave->render($row, $primary)}
+    {$rowActionCancel->render($row, $primary)}
+{/define}
+
+{* row-actions-edit-link *}
+{define row-actions-edit-link}
+    <a href="{link edit! $primary}" class="ajax btn btn-xs btn-secondary" title="Edit" data-datagrid-edit>{$control->translate(Edit)}</a>
+{/define}
+
+
+{* group actions - bootstrap style*}
+{define global-actions}
+    <div class="btn-group" role="group">
+        {input $form[actions][action], class=>'form-control form-control-sm',}
+        {input $form[actions][process], class=>'btn btn-sm btn-outline-primary', value=>'Do'}
+    </div>
+{/define}
+
+
+{* global-filter-actions *}
+{define global-filter-actions}
+    {$filterButton->render()}
+    {if $showCancel}
+        {$cancelFilterButton->render()}
+    {/if}
+{/define}
+
+{* row actions
+    * item detail
+    * edit
+    * custom actions
+*}
+{if $hasRowCustomActions}
+    {define row-actions}
+
+        {if !is_null($rowActionItemDetail)}
+            {$rowActionItemDetail->render($row, $primary, $this->global->snippetDriver->getHtmlId("itemDetail-$primary"))}
+        {/if}
+
+        {if $control->getEditFormFactory()}
+            {$rowActionEdit->render($row, $primary)}
+        {/if}
+
+        {foreach $rowCustomActions as $actionName => $rowAction}
+            {$rowAction->render($row, $primary)}
+        {/foreach}
+    {/define}
+{/if}
+
+{* paginator *}
+{define pagination}
+    <small>
+        <nav aria-label="pagination">
+            <ul class="pagination">
+                <li class="page-item {if $paginator->isFirst()}disabled{/if}" title="First">
+                    <a class="page-link" href="{link paginate!, 'page'=>1}" tabindex="-1" {if $paginator->isFirst()}aria-disabled="true"{/if}><<</a>
+                </li>
+                <li class="page-item {if $paginator->isFirst()}disabled{/if}" title="Previous">
+                    <a class="page-link" {if $paginator->isFirst()}aria-disabled="true"{/if} href="{link paginate!, 'page'=>$paginator->page-1}"><</a></li>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">{$paginator->page} / {$paginator->pageCount}<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="page-item {if $paginator->isLast()}disabled{/if}" title="Next">
+                    <a class="page-link" {if $paginator->isLast()}aria-disabled="true"{/if} href="{link paginate!, 'page'=>$paginator->page+1}">></a></li>
+                <li class="page-item {if $paginator->isLast()}disabled{/if}" title="Last">
+                    <a class="page-link" {if $paginator->isFirst()}aria-disabled="true"{/if} href="{link paginate!, 'page'=>$paginator->pageCount}">>></a>
+                </li>
+            </ul>
+        </nav>
+    </small>
+{/define}
+
+
+
+{*
+*******************************************************************************************
+BLOCKS ADDED
+*}
+
+
+{* global custom actions *}
+{define global-custom-actions}
+    {foreach $customActions as $actionName => $action}
+        {$action->render()}
+    {/foreach}
+{/define}
+
+{* row item detail - tr
+    * to style row item detail (must include tr tag)
+*}
+{define row-item-detail-tr}
+    <tr id="{$itemDetailId}" class="collapse">
+        <td colspan="{$colspan}">
+            {include #row-item-detail row => $row, primary => $primary}
+        </td>
+    </tr>
+{/define}
+
+{* row item detail
+    * to define row item detail content
+ *}
+{define row-item-detail}
+{/define}
+
+
+
+
+{*
+    * set table title on first row
+*}
+{define table-title-tr}
+    <tr>
+        <td colspan="{$colspan}">
+            {ifset #table-title}
+                {include #table-title}
+            {/ifset}
+        </td>
+    </tr>
+{/define}
+{ifset $documentTemplate->tableTitle}
+    {define table-title}
+        {$documentTemplate->tableTitle}
+    {/define}
+{/ifset}

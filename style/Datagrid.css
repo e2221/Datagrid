@@ -1,0 +1,25 @@
+
+.grid table thead tr th {
+    font-size: 90%;
+
+}
+
+
+.grid .table-sm th, .grid .table-sm td {
+    padding: 0.3rem;
+}
+
+.grid .form-control-sm {
+    height: calc(1.5em + 0.5rem + 2px);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.grid .btn-xs, .grid .btn-group-xs > .btn {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px
+}
