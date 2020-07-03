@@ -1,0 +1,21 @@
+{
+    "name": "e2221/datagrid",
+    "description": "Extended Nextras/Datagrid for Nette3 with Nittro js",
+    "type": "library",
+    "require": {
+        "php": ">=7.4",
+        "nette/application": "~3.0",
+        "nette/component-model": "~3.0",
+        "nette/forms": "~3.0",
+        "nette/utils": "~3.0",
+        "latte/latte": "~2.5",
+        "nextras/datagrid": "v3.1.0",
+        "nittro/nette-bridges": "^2.1"
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    }
+}
