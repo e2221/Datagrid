@@ -250,18 +250,14 @@ BLOCKS ADDED
 {define row-item-detail-tr}
     <tr id="{$itemDetailId}" class="collapse">
         <td colspan="{$colspan}">
-            {include #row-item-detail row => $row, primary => $primary}
+            {ifset #row-item-detail#}
+                {include #row-item-detail row => $row, primary => $primary}
+            {else}
+                {$rowActionItemDetail->renderContent($row, $primary)}
+            {/ifset}
         </td>
     </tr>
 {/define}
-
-{* row item detail
-    * to define row item detail content
- *}
-{define row-item-detail}
-{/define}
-
-
 
 
 {*
