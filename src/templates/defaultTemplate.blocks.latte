@@ -3,7 +3,13 @@
 {* table-open-tag *}
 {define table-open-tag}
     {if $documentTemplate->responsive}<div class="table-responsive">{/if}
-        <table class="{$documentTemplate->tableClass}{$documentTemplate->hover ? ' table-hover'}{$documentTemplate->borderless ? ' table-borderless'}{$documentTemplate->stripped ? ' table-striped'}{$documentTemplate->border ? ' table-bordered'}">
+        <table class="{$documentTemplate->tableClass}{$documentTemplate->hover ? ' table-hover'}{$documentTemplate->borderless ? ' table-borderless'}{$documentTemplate->stripped ? ' table-striped'}{$documentTemplate->border ? ' table-bordered'}{$documentTemplate->addClass ? ' ' . implode(' ', $documentTemplate->addClass)}"
+            {ifset $documentTemplate->attributes}
+                {foreach $documentTemplate->attributes as $attribute => $value}
+                     {$attribute="$value"}
+                {/foreach}
+            {/ifset}
+        >
 {/define}
 
 {* table close *}

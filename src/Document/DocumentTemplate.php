@@ -10,6 +10,12 @@ class DocumentTemplate
     /** @var string Table class */
     public string $tableClass = 'table table-sm';
 
+    /** @var string|null Adds class to defined in $tableClass */
+    public ?string $addClass = null;
+
+    /** @var array|null Html attributes of table (id=>'id') */
+    public ?array $attributes = [];
+
     /** @var bool Adds bootstrap responsive div */
     public bool $responsive = false;
 
@@ -33,6 +39,29 @@ class DocumentTemplate
 
 
     /**
+     * Set class that will be added
+     * @param string|null $addClass
+     * @return DocumentTemplate
+     */
+    public function setAddClass(?string $addClass): DocumentTemplate
+    {
+        $this->addClass = $addClass;
+        return $this;
+    }
+
+    /**
+     * Set html attributes
+     * @param array|null $attributes
+     * @return DocumentTemplate
+     */
+    public function setAttributes(?array $attributes): DocumentTemplate
+    {
+        $this->attributes = $attributes;
+        return $this;
+    }
+
+
+    /**
      * Sets table title
      * @param string|null|Html $tableTitle
      * @return DocumentTemplate
@@ -42,7 +71,6 @@ class DocumentTemplate
         $this->tableTitle = $tableTitle;
         return $this;
     }
-
 
 
     /**
