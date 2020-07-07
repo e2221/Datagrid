@@ -9,10 +9,9 @@
         "nette/forms": "~3.0",
         "nette/utils": "~3.0",
         "latte/latte": "~2.5",
-        "nextras/datagrid": "v3.1.0",
+        "nextras/datagrid": "v3.1.1",
         "nittro/nette-bridges": "^2.1"
     },
-    "minimum-stability": "dev",
     "config": {
         "platform": {
             "php": "7.4"
