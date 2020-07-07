@@ -359,10 +359,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
         //generate edit form factory
         $this->generateEditFormFactory();
-
-        //add default template
-        $this->addDefaultTemplate();
-
     }
 
 
