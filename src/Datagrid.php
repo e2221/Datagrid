@@ -185,26 +185,15 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
 
     /**
-     * Add default styles template
-     * can be overwritten
+     * Get cells templates
+     * @return array
      */
-    public function addDefaultTemplate(): void
-    {
-        $this->addCellsTemplate(__DIR__ . '/templates/defaultTemplate.blocks.latte');
-
-    }
-
-
-
     public function getCellsTemplates()
     {
-        $templates = $this->cellsTemplates;
-        //$templates[] = __DIR__ . '/templates/defaultTemplate.blocks.latte';
-        $templates[] = __DIR__ . '/templates/Datagrid.blocks.latte';
+        $templates = parent::getCellsTemplates();
+        $templates[] = __DIR__ . '/templates/defaultTemplate.blocks.latte';
         return $templates;
     }
-
-
 
 
     /**
@@ -333,6 +322,13 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
 
+    /**
+     * Set pagination
+     * @param $itemsPerPage
+     * @param callable|null $itemsCountCallback
+     * @param array|null $itemsCountList
+     * @param string|null $allOptionTitle
+     */
     public function setPagination($itemsPerPage, callable $itemsCountCallback = null, ?array $itemsCountList = null, ?string $allOptionTitle = null)
     {
         parent::setPagination($this->itemsPerPage ?? $itemsPerPage, $itemsCountCallback);
@@ -341,7 +337,9 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
 
-
+    /**
+     * Signal to reload all grid
+     */
     public function handleReload(): void
     {
         $this->redrawControl('rows');
