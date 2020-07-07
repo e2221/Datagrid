@@ -191,9 +191,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      */
     public function getCellsTemplates()
     {
-        $templates = parent::getCellsTemplates();
-        $templates[] = __DIR__ . '/templates/defaultTemplate.blocks.latte';
-        return $templates;
+        $this->addCellsTemplate(__DIR__ . '/templates/defaultTemplate.blocks.latte');
+        return parent::getCellsTemplates();
     }
 
 
