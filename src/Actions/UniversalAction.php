@@ -39,9 +39,7 @@ class UniversalAction
     /** @var string|null render confirmation only if confirmation isset */
     protected ?string $confirmationMessage=null;
 
-    /**
-     * @var Datagrid|null
-     */
+    /** @var Datagrid|null  */
     protected ?Datagrid $datagrid;
 
     public function __construct(string $name, ?string $title=null, ?Datagrid $datagrid=null)
