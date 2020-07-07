@@ -24,7 +24,7 @@
     <tr class="grid-columns">
         {ifset $form[actions]}
             <th class="grid-col-global-actions">
-                <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" onclick="{*checkAllCheckboxesByName(this, 'actions[items][]')*}" title="Select All">
+                <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" title="Select All">
             </th>
         {/ifset}
         {foreach $columns as $column}
