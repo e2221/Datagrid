@@ -186,6 +186,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /**
      * Get cells templates
+     * load parent getCellsTemplates() and add defaultTemplate.blocks.latte
      * @return array
      */
     public function getCellsTemplates()
