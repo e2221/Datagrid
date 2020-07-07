@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid\Actions;
 
+use e2221\Datagrid\Confirmation\Confirmation;
 use e2221\Datagrid\Datagrid;
 use Nette\Utils\Html;
 
