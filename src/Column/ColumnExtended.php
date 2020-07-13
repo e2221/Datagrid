@@ -13,6 +13,15 @@ class ColumnExtended extends Column
     /** @var bool Is column filterable */
     protected bool $filterable = FALSE;
 
+    /** @var bool Is column filterable multiple (for selected fields) */
+    protected bool $multipleFilterable = FALSE;
+
+    /** @var array List of excluded columns in multiple filtering */
+    protected array $listExcludedFromMultipleFilter = [];
+
+    /** @var array Set HTML decoration of filter input */
+    protected array $inputHtmlDecorations = [];
+
     /** @var bool Is column editable? */
     protected bool $editable = FALSE;
 
@@ -119,6 +128,30 @@ class ColumnExtended extends Column
     }
 
     /**
+     * Sets column multiple filterable
+     * @param bool $filterable
+     * @param array $listExcludedColumns exclude from multiple filter
+     * @return $this
+     */
+    public function setMultipleFilterable(bool $filterable=true, array $listExcludedColumns=[]): ColumnExtended
+    {
+        $this->multipleFilterable = $filterable;
+        $this->listExcludedFromMultipleFilter = $listExcludedColumns;
+        return $this;
+    }
+
+    /**
+     * Set html decoration to the filter input (placeholder=>'my placeholder text', ...)
+     * @param array $inputDecorations
+     * @return $this
+     */
+    public function setInputHtmlDecoration(array $inputDecorations): ColumnExtended
+    {
+        $this->inputHtmlDecorations = $inputDecorations;
+        return $this;
+    }
+
+    /**
      * Sets column editable
      * @param bool $editable
      * @return ColumnExtended
@@ -209,6 +242,14 @@ class ColumnExtended extends Column
     public function isFilterable(): bool
     {
         return $this->filterable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMultipleFilterable(): bool
+    {
+        return $this->multipleFilterable;
     }
 
     /**

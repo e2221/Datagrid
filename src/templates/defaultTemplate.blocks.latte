@@ -267,17 +267,46 @@ BLOCKS ADDED
 
 
 {*
-    * set table title on first row
+    * set table title and multiple filter on first row
 *}
 {define table-title-tr}
-    <tr>
-        <td colspan="{$colspan}">
-            {ifset #table-title}
-                {include #table-title}
-            {/ifset}
-        </td>
-    </tr>
+    {if (bool)$control->getEditFormFactory && $multipleFilter === true}
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col">
+                        {ifset #table-tilte}
+                            {include #table-title}
+                        {/ifset}
+                    </div>
+                    <div class="col">
+                        {formContainer filter}
+                            {foreach $columns as $column}
+                                {continueIf $column->isHidden()}
+                                {continueIf !$column->isMultipleFilterable()}
+                                {if isset($form['filter'][$column->name])}
+                                    {ifset #col-filter-{$column->name}}
+                                        {include #"col-filter-{$column->name}" column => $column}
+                                    {else}
+                                        {include #col-filter column => $column}
+                                    {/ifset}
+                                {/if}
+                            {/foreach}
+                        {/formContainer}
+                    </div>
+                </div>
+            </td>
+        </tr>
+    {else}
+        {ifset #table-title}
+            <tr>
+                <td colspan="{$colspan}">{include #table-title}</td>
+            </tr>
+        {/ifset}
+    {/if}
 {/define}
+
+{* if title is set ->generate block *}
 {ifset $documentTemplate->tableTitle}
     {define table-title}
         {$documentTemplate->tableTitle}

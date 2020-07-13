@@ -22,11 +22,19 @@ use Nette\Utils\Random;
 
 class Datagrid extends \Nextras\Datagrid\Datagrid
 {
+    /** @var array|string[] Default input attributes */
+    public array $defaultInputAttributes = [
+        'class' => 'form-control form-control-sm'
+    ];
+
     /** @var bool is there at least one editable column? */
     private bool $isEditable = FALSE;
 
     /** @var bool is there at least one filterable column? */
     private bool $isFilterable = FALSE;
+
+    /** @var bool false=filter foreach column, true=one multiple filter */
+    private bool $isMultipleFilterable = FALSE;
 
     /** @var array Head actions */
     protected array $customActions=[];
@@ -67,7 +75,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var int|null @persistent Paginator - items per page */
     public ?int $itemsPerPage=null;
 
-
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
@@ -77,6 +84,17 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->rowActionEdit = new RowActionEdit('__edit', 'Edit', $this);
         $this->rowActionSave = new RowActionSave('__save', 'Save');
         $this->rowActionCancel = new RowActionCancel('__cancel', 'Cancel');
+    }
+
+    /**
+     * Set multiple filter
+     * @param bool $multiple
+     * @return $this
+     */
+    public function setMultipleFilter(bool $multiple=true): Datagrid
+    {
+        $this->multipleFilter = $multiple;
+        return $this;
     }
 
     /**
@@ -147,7 +165,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
     
 
-
     /**
      * Generates universal Form Container
      * @param Container $container
@@ -158,26 +175,27 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * @param array $selection
      * @return Container
      */
-    private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null): Container
+    private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null, array $htmlDecorations=[]): Container
     {
         switch ($html){
             case 'select':
-                $container->addSelect($name, $caption, $selection)
-                    ->setHtmlAttribute('class', 'form-control form-control-sm');
+                $container->addSelect($name, $caption, $selection);
                 break;
             case 'textarea':
-                $container->addTextArea($name, $caption)
-                    ->setHtmlAttribute('class', 'form-control form-control-sm');
+                $container->addTextArea($name, $caption);
                 break;
             default:
                 $addMethod = 'add' . $html;
                 if(!method_exists($this, $addMethod))
                     $addMethod = 'addText';
-                $container->$addMethod($name, $caption)
-                    ->setHtmlAttribute('class', 'form-control form-control-sm')
-                    ->setHtmlAttribute('autocomplete', 'off');
+                $container->$addMethod($name, $caption);
                 break;
         }
+        foreach ($this->defaultInputAttributes as $attribute => $value) {
+            $container[$name]->setHtmlAttribute($attribute, $value);
+        }
+        foreach ($htmlDecorations as $tag => $value)
+            $container[$name]->setHtmlAttribute($tag, $value);
         if($required)
             $container[$name]->setRequired();
         return $container;
@@ -211,6 +229,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $filterableColumns[$columnName] = $column;
                 $this->isFilterable = TRUE;
             }
+            if($column->isMultipleFilterable())
+                $this->isMultipleFilterable = TRUE;
         }
         return $filterableColumns;
     }
@@ -390,6 +410,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->itemsCountList = $this->itemsCountList;
         $this->template->allOptionTitle = $this->allOptionTitle;
         $this->template->itemsPerPage = $this->itemsPerPage;
+        $this->template->hasMultipleFilter = $this->isMultipleFilterable;
 
         $this->template->form = $this['form'];
         $this->template->data = $this->getData();
@@ -443,5 +464,5 @@ class DatagridTemplate extends Template
     public ?array $itemsCountList;
     public ?string $allOptionTitle;
     public ?int $itemsPerPage;
-
+    public bool $hasMultipleFilter;
 }
