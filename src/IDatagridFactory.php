@@ -1,7 +1,5 @@
 <?php
-namespace App\Tools\Datagrid;
-
-use e2221\Datagrid\Datagrid;
+namespace e2221\Datagrid;
 
 interface IDatagridFactory
 {

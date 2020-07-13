@@ -9,6 +9,10 @@ Requirements
 - jQuery.min.js, Nittro.min.js, vendor/e2221/Datagrid/js/scripts.js, bootstrap.min.js
 - bootstrap.min.css, fontawesome.min.css,
  vendor/e2221/style/Datagrid.css
+ 
+Install
+-
+composer require e2221/datagrid
 
 Features
 -
