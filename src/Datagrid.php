@@ -87,17 +87,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Set multiple filter
-     * @param bool $multiple
-     * @return $this
-     */
-    public function setMultipleFilter(bool $multiple=true): Datagrid
-    {
-        $this->multipleFilter = $multiple;
-        return $this;
-    }
-
-    /**
      * Row Action - Item detail setter
      * @param string $name
      * @param string $title

@@ -40,9 +40,7 @@
                 {/ifset}
                 {include #row-head-columns}
                 {ifset $form['filter']}
-                    {if ($multipleFilter === false && (bool) $control->getEditFormFactory()) || $documentTemplate->tableTitle}
-                        {include #row-head-filter}
-                    {/if}
+                    {include #row-head-filter}
                 {/ifset}
             </thead>
             <tbody>
