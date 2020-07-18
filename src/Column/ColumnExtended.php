@@ -19,8 +19,14 @@ class ColumnExtended extends Column
     /** @var array List of excluded columns in multiple filtering */
     protected array $listExcludedFromMultipleFilter = [];
 
+    /** @var array Set HTML decoration of edit input */
+    protected array $editInputHtmlDecorations = [];
+
     /** @var array Set HTML decoration of filter input */
-    protected array $inputHtmlDecorations = [];
+    protected array $filterInputHtmlDecorations = [];
+
+    /** @var array Set HTML decoration of filter multiple input */
+    protected array $filterMultipleHtmlDecorations = [];
 
     /** @var bool Is column editable? */
     protected bool $editable = FALSE;
@@ -36,7 +42,6 @@ class ColumnExtended extends Column
 
     /** @var bool Sets hidden column */
     protected bool $hidden = FALSE;
-
 
     /** @var null|callable Set custom Nette\Utils\Html of column callback */
     protected $htmlCallback = null;
@@ -119,11 +124,13 @@ class ColumnExtended extends Column
     /**
      * Sets column filterable
      * @param bool $filterable
+     * @param array $filterHtmlDecorations html tags
      * @return ColumnExtended
      */
-    public function setFilterable(bool $filterable=true): ColumnExtended
+    public function setFilterable(bool $filterable=true, array $filterHtmlDecorations=[]): ColumnExtended
     {
         $this->filterable = $filterable;
+        $this->filterInputHtmlDecorations = $filterHtmlDecorations;
         return $this;
     }
 
@@ -131,25 +138,50 @@ class ColumnExtended extends Column
      * Sets column multiple filterable
      * @param bool $filterable
      * @param array $listExcludedColumns exclude from multiple filter
+     * @param array $filterHtmlDecorations html tags
      * @return $this
      */
-    public function setMultipleFilterable(bool $filterable=true, array $listExcludedColumns=[]): ColumnExtended
+    public function setMultipleFilterable(bool $filterable=true, array $listExcludedColumns=[], array $filterHtmlDecorations=[]): ColumnExtended
     {
         $this->multipleFilterable = $filterable;
         $this->listExcludedFromMultipleFilter = $listExcludedColumns;
+        $this->filterMultipleHtmlDecorations = $filterHtmlDecorations;
         return $this;
     }
 
     /**
-     * Set html decoration to the filter input (placeholder=>'my placeholder text', ...)
-     * @param array $inputDecorations
-     * @return $this
+     * Set html tags for Edit input
+     * @param array $editInputHtmlDecorations
+     * @return ColumnExtended
      */
-    public function setInputHtmlDecoration(array $inputDecorations): ColumnExtended
+    public function setEditInputHtmlDecorations(array $editInputHtmlDecorations): ColumnExtended
     {
-        $this->inputHtmlDecorations = $inputDecorations;
+        $this->editInputHtmlDecorations = $editInputHtmlDecorations;
         return $this;
     }
+
+    /**
+     * Set html tags for Filter input
+     * @param array $filterInputHtmlDecorations
+     * @return ColumnExtended
+     */
+    public function setFilterInputHtmlDecorations(array $filterInputHtmlDecorations): ColumnExtended
+    {
+        $this->filterInputHtmlDecorations = $filterInputHtmlDecorations;
+        return $this;
+    }
+
+    /**
+     * Set html tags for Filter-multiple input
+     * @param array $filterMultipleHtmlDecorations
+     * @return ColumnExtended
+     */
+    public function setFilterMultipleHtmlDecorations(array $filterMultipleHtmlDecorations): ColumnExtended
+    {
+        $this->filterMultipleHtmlDecorations = $filterMultipleHtmlDecorations;
+        return $this;
+    }
+
 
     /**
      * Sets column editable
@@ -260,7 +292,35 @@ class ColumnExtended extends Column
         return $this->editable;
     }
 
+    /**
+     * @return array
+     */
+    public function getListExcludedFromMultipleFilter(): array
+    {
+        return $this->listExcludedFromMultipleFilter;
+    }
 
+    /**
+     * @return array
+     */
+    public function getEditInputHtmlDecorations(): array
+    {
+        return $this->editInputHtmlDecorations;
+    }
 
+    /**
+     * @return array
+     */
+    public function getFilterInputHtmlDecorations(): array
+    {
+        return $this->filterInputHtmlDecorations;
+    }
 
+    /**
+     * @return array
+     */
+    public function getFilterMultipleHtmlDecorations(): array
+    {
+        return $this->filterMultipleHtmlDecorations;
+    }
 }

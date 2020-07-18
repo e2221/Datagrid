@@ -18,103 +18,136 @@
     {if $documentTemplate->responsive}</div>{/if}
 {/define}
 
-{* row-head-columns hide hidden fields *}
+{*
+    * row-head-columns hide hidden fields
+    * style TR tag
+*}
 {define row-head-columns}
     {if !$documentTemplate->hideTableHeader}
-    <tr class="grid-columns">
-        {ifset $form[actions]}
-            <th class="grid-col-global-actions">
-                <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" title="Select All">
-            </th>
-        {/ifset}
-        {foreach $columns as $column}
-            {continueIf $column->isHidden()}
-            <th class="grid-col-{$column->name}">
-                {if $column->canSort()}
-                    <a href="{link sort! orderColumn => $column->name, orderType => $column->getNewState()}" class="ajax">{$column->label}</a>
-                    {if $column->isAsc()}
-                        <span class="grid-sort-symbol grid-sort-symbol-asc"><em>&#9650;</em></span>
-                    {elseif $column->isDesc()}
-                        <span class="grid-sort-symbol grid-sort-symbol-desc"><em>&#9660;</em></span>
+        {$headRowTemplate->renderStartTag()|noescape}
+        {*}<tr class="grid-columns">{*}
+            {ifset $form[actions]}
+                {$headColumnTemplate->renderStartTag('global-actions')|noescape}
+                {*}<th class="grid-col-global-actions">{*}
+                    <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" title="Select All">
+                {*}</th>{*}
+                {$headColumnTemplate->renderEndTag()|noescape}
+            {/ifset}
+            {foreach $columns as $column}
+                {continueIf $column->isHidden()}
+                {$headColumnTemplate->renderStartTag($column->name)|noescape}
+                {*}<th class="grid-col-{$column->name}">{*}
+                    {if $column->canSort()}
+                        <a href="{link sort! orderColumn => $column->name, orderType => $column->getNewState()}" class="ajax">{$column->label}</a>
+                        {if $column->isAsc()}
+                            <span class="grid-sort-symbol grid-sort-symbol-asc"><em>&#9650;</em></span>
+                        {elseif $column->isDesc()}
+                            <span class="grid-sort-symbol grid-sort-symbol-desc"><em>&#9660;</em></span>
+                        {else}
+                            <span class="grid-sort-symbol grid-sort-symbol-no"></span>
+                        {/if}
                     {else}
-                        <span class="grid-sort-symbol grid-sort-symbol-no"></span>
+                        {$column->label}
                     {/if}
-                {else}
-                    {$column->label}
-                {/if}
-            </th>
-        {/foreach}
-        {if $hasActionsColumn}
-            <th class="grid-col-actions">
-                {include #global-custom-actions}
-            </th>
-        {/if}
-    </tr>
+                {*}</th>{*}
+                {$headColumnTemplate->renderEndTag()|noescape}
+            {/foreach}
+            {if $hasActionsColumn}
+                {$headActionsColumnTemplate->renderStartTag()|noescape}
+                    {*}<th class="grid-col-actions">{*}
+                        {include #global-custom-actions}
+                    {*}</th>{*}
+                {$headActionsColumnTemplate->renderEndTag()|noescape}
+            {/if}
+        {*}</tr>{*}
+        {$headRowTemplate->renderEndTag()|noescape}
     {/if}
 {/define}
 
 
-{* row-head-filter hide hidden fields*}
+{*
+    * row-head-filter hide hidden fields
+    * tr headFilterRowTemplate
+*}
 {define row-head-filter}
-    <tr class="grid-filters">
-        {ifset $form[actions]}
-            <th class="grid-col-global-actions"></th>
-        {/ifset}
-        {formContainer filter}
-            {foreach $columns as $column}
-                {continueIf $column->isHidden()}
-                <th class="grid-col-{$column->name}">
-                    {if isset($form['filter'][$column->name])}
-                        {ifset #col-filter-{$column->name}}
-                            {include #"col-filter-{$column->name}" column => $column}
-                        {else}
-                            {include #col-filter column => $column}
-                        {/ifset}
-                    {/if}
-                </th>
-            {/foreach}
-            <th class="grid-col-actions">
-                {include #global-filter-actions showCancel => $showFilterCancel}
-            </th>
-        {/formContainer}
-    </tr>
+    {if $isFilterable}
+        {$headFilterRowTemplate->renderStartTag()|noescape}
+        {*}<tr class="grid-filters">{*}
+            {ifset $form[actions]}
+                {$headFilterColumnTemplate->render('global-actions')}
+                {*}<th class="grid-col-global-actions"></th>{*}
+            {/ifset}
+            {formContainer filter}
+                {foreach $columns as $column}
+                    {continueIf $column->isHidden()}
+                    {$headFilterColumnTemplate->renderStartTag($column->name)|noescape}
+                    {*}<th class="grid-col-{$column->name}">{*}
+                        {if isset($form['filter'][$column->name]) && $column->isFilterable()}
+                            {ifset #col-filter-{$column->name}}
+                                {include #"col-filter-{$column->name}" column => $column}
+                            {else}
+                                {include #col-filter column => $column}
+                            {/ifset}
+                        {/if}
+                    {*}</th>{*}
+                    {$headFilterColumnTemplate->renderEndTag()|noescape}
+                {/foreach}
+                {$headFilterActionsColumnTemplate->renderStartTag()|noescape}
+                {*}<th class="grid-col-actions">{*}
+                    {include #global-filter-actions showCancel => $showFilterCancel}
+                {*}</th>{*}
+                {$headFilterActionsColumnTemplate->renderEndTag()|noescape}
+            {/formContainer}
+        {*}</tr>{*}
+        {$headFilterRowTemplate->renderEndTag()|noescape}
+    {/if}
 {/define}
 
 {* row
    + row item detail
+   * style TR tag
 *}
 {define row}
-    <tr id={$rowId}>
+    {$dataRowTemplate->renderStartTag($rowId, $primary, $row)|noescape}
+    {*}<tr id={$rowId}>{*}
         {include #row-inner row => $row}
-    </tr>
-    {ifset $rowActionItemDetail}
+    {*}</tr>{*}
+    {$dataRowTemplate->renderEndTag()|noescape}
+
+    {if !is_null($dataActionsColumnTemplate->getRowActionItemDetail())}
         {var $colspan = count($columns) + $hasGlobalActionsColumn + $hasActionsColumn}
         {include #row-item-detail-tr row => $row, primary => $primary, colspan => $colspan, itemDetailId => $itemDetailId}
         <tr>
             <td class="d-none" colspan="{=count($columns) + $hasGlobalActionsColumn + $hasActionsColumn}"></td>
         </tr>
-    {/ifset}
+    {/if}
 {/define}
 
 
-{* row-inner hide hidden fields *}
+{*
+    * row-inner hide hidden fields
+    * style TD tag
+*}
 {define row-inner}
     {var $primary = $control->getter($row, $rowPrimaryKey)}
     {php if (!$sendOnlyRowParentSnippet): $this->global->snippetDriver->enter("rows-$primary", "dynamic"); endif;}
 
     {var $editRow = $editRowKey == $primary && $primary !== NULL && $editRowKey !== NULL}
     {ifset $form[actions]}
-        <td class="grid-col-global-actions">
+        {$dataColumnTemplate->renderStartTag('global-actions')|noescape}
+        {*}<td class="grid-col-global-actions">{*}
             {formContainer actions}
                 {input items:$primary class => $uniqueHash}
             {/formContainer}
-        </td>
+        {$dataColumnTemplate->renderEndTag()|noescape}
+        {*}</td>{*}
     {/ifset}
     {foreach $columns as $column}
         {continueIf $column->isHidden()}
         {var $cell = $control->getter($row, $column->name, FALSE)}
         {if $editRow && $column->name != $rowPrimaryKey && (isset($form['edit'][$column->name]) || isset($this->blockQueue["cell-edit-{$column->name}"]))}
-            <td class="grid-col-{$column->name}">
+            {$dataColumnTemplate->renderStartTag($column->name)|noescape}
+            {*}<td class="grid-col-{$column->name}">{*}
                 {ifset #cell-edit-$column->name}
                     {include #"cell-edit-{$column->name}" form => $form, column => $column, row => $row}
                 {else}
@@ -125,24 +158,28 @@
                         {/if}
                     {/formContainer}
                 {/ifset}
-            </td>
+            {*}</td>{*}
+            {$dataColumnTemplate->renderEndTag()|noescape}
         {else}
             {ifset #col-$column->name}
                 {include #"col-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
             {else}
-                <td class="grid-col-{$column->name}">
+                {$dataColumnTemplate->renderStartTag('grid-col-' . $column->name, $primary, $row, $cell)|noescape}
+                {*}<td class="grid-col-{$column->name}">{*}
                     {ifset #cell-$column->name}
                         {include #"cell-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
                     {else}
                         {$column->render($row, $primary, $cell)}
                     {/ifset}
-                </td>
+                {*}</td>{*}
+                {$dataColumnTemplate->renderEndTag()|noescape}
             {/ifset}
         {/if}
     {/foreach}
 
     {if $hasActionsColumn}
-        <td class="grid-col-actions">
+        {$dataActionsColumnTemplate->renderStartTag()|noescape}
+        {*}<td class="grid-col-actions">{*}
             {if $editRow}
                 {formContainer edit}
                     {input $rowPrimaryKey class => 'grid-primary-value'}
@@ -151,11 +188,14 @@
             {else}
                 {ifset #row-actions}
                     {include #row-actions row => $row, primary => $primary}
+                {elseif $shouldHaveActions}
+                    {include #row-actions-generated row => $row, primary => $primary}
                 {elseif $control->getEditFormFactory()}
                     {include #row-actions-edit-link row => $row, primary => $primary}
                 {/ifset}
             {/if}
-        </td>
+        {*}</td>{*}
+        {$dataActionsColumnTemplate->renderEndTag()|noescape}
     {/if}
     {php if (!$sendOnlyRowParentSnippet): $this->global->snippetDriver->leave(); endif;}
 {/define}
@@ -163,8 +203,8 @@
 
 {* row-actions-edit *}
 {define row-actions-edit}
-    {$rowActionSave->render($row, $primary)}
-    {$rowActionCancel->render($row, $primary)}
+    {$dataActionsColumnTemplate->getRowActionSave()->render($row, $primary)}
+    {$dataActionsColumnTemplate->getRowActionCancel()->render($row, $primary)}
 {/define}
 
 {* row-actions-edit-link *}
@@ -184,9 +224,9 @@
 
 {* global-filter-actions *}
 {define global-filter-actions}
-    {$filterButton->render()}
-    {if $showCancel}
-        {$cancelFilterButton->render()}
+    {$headFilterActionsColumnTemplate->getFilterActionButton()->render()}
+    {if $showFilterCancel}
+        {$headFilterActionsColumnTemplate->getCancelFilterActionButton()->render()}
     {/if}
 {/define}
 
@@ -195,22 +235,19 @@
     * edit
     * custom actions
 *}
-{if $hasRowCustomActions}
-    {define row-actions}
+{define row-actions-generated}
+    {if !is_null($dataActionsColumnTemplate->getRowActionItemDetail())}
+        {$dataActionsColumnTemplate->render($row, $primary, $this->global->snippetDriver->getHtmlId("itemDetail-$primary"))}
+    {/if}
 
-        {if !is_null($rowActionItemDetail)}
-            {$rowActionItemDetail->render($row, $primary, $this->global->snippetDriver->getHtmlId("itemDetail-$primary"))}
-        {/if}
+    {if $control->getEditFormFactory()}
+        {$dataActionsColumnTemplate->getRowActionEdit()->render($row, $primary)}
+    {/if}
 
-        {if $control->getEditFormFactory()}
-            {$rowActionEdit->render($row, $primary)}
-        {/if}
-
-        {foreach $rowCustomActions as $actionName => $rowAction}
-            {$rowAction->render($row, $primary)}
-        {/foreach}
-    {/define}
-{/if}
+    {foreach $rowCustomActions as $actionName => $rowAction}
+        {$rowAction->render($row, $primary)}
+    {/foreach}
+{/define}
 
 {* paginator *}
 {define pagination}
@@ -254,15 +291,49 @@ BLOCKS ADDED
     * to style row item detail (must include tr tag)
 *}
 {define row-item-detail-tr}
-    <tr id="{$itemDetailId}" class="collapse">
-        <td colspan="{$colspan}">
+    {$itemDetailRowTemplate->renderStartTag($itemDetailId, $primary, $row)|noescape}
+    {*}<tr id="{$itemDetailId}" class="collapse">{*}
+        {$itemDetailColumnTemplate->renderStartTag($colspan, $primary, $row)|noescape}
+        {*}<td colspan="{$colspan}">{*}
             {ifset #row-item-detail#}
                 {include #row-item-detail row => $row, primary => $primary}
             {else}
-                {$rowActionItemDetail->renderContent($row, $primary)}
+                {$dataActionsColumnTemplate->getRowActionItemDetail()->renderContent($row, $primary)}
             {/ifset}
-        </td>
-    </tr>
+        {*}</td>{*}
+    {*}</tr>{*}
+    {$itemDetailRowTemplate->renderEndTag()|noescape}
+{/define}
+
+{define multiple-filter}
+    {if $hasMultipleFilter}
+        {$multipleFilterTemplate->renderStartTag()|noescape}
+            <div class="input-group input-group-sm">
+                {formContainer filterMultiple}
+                    {foreach $columns as $column}
+                        {continueIf $column->isHidden()}
+                        {continueIf !$column->isMultipleFilterable()}
+                        {if isset($form['filterMultiple'][$column->name])}
+                            {input $column->name autofocus=>'true'}
+                        {/if}
+                    {/foreach}
+                    <button type="submit" n:name="filterMultiple" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
+                    {*input filterMultiple class=>''*}
+                {/formContainer}
+            </div>
+        {$multipleFilterTemplate->renderEndTag()|noescape}
+    {/if}
+{/define}
+
+{* @internal *}
+{define grid-title}
+    {ifset #title}
+        {include #title}
+    {else}
+        {if (!is_null($titleTemplate))}
+            {$titleTemplate->render()}
+        {/if}
+    {/ifset}
 {/define}
 
 
@@ -270,45 +341,29 @@ BLOCKS ADDED
     * set table title and multiple filter on first row
 *}
 {define table-title-tr}
-    {if (bool)$control->getFilterFormFactory() && $hasMultipleFilter}
-        <tr>
-            <td>
-                <div class="row">
-                    <div class="col">
-                        {ifset #table-tilte}
-                            {include #table-title}
-                        {/ifset}
-                    </div>
-                    <div class="col">
-                        {formContainer filter}
-                            {foreach $columns as $column}
-                                {continueIf $column->isHidden()}
-                                {continueIf !$column->isMultipleFilterable()}
-                                {if isset($form['filter'][$column->name])}
-                                    {ifset #col-filter-{$column->name}}
-                                        {include #"col-filter-{$column->name}" column => $column}
-                                    {else}
-                                        {include #col-filter column => $column}
-                                    {/ifset}
-                                {/if}
-                            {/foreach}
-                        {/formContainer}
-                    </div>
-                </div>
-            </td>
-        </tr>
-    {else}
-        {ifset #table-title}
-            <tr>
-                <td colspan="{$colspan}">{include #table-title}</td>
-            </tr>
-        {/ifset}
-    {/if}
+    {$titleRowTemplate->renderStartTag()|noescape}
+        {$titleColumnTemplate->renderStartTag($colspan)|noescape}
+            <div class="row">
+                {include #grid-title}
+                {include #multiple-filter}
+            </div>
+        {$titleColumnTemplate->renderEndTag()|noescape}
+    {$titleRowTemplate->renderEndTag()|noescape}
 {/define}
 
-{* if title is set ->generate block *}
-{ifset $documentTemplate->tableTitle}
-    {define table-title}
-        {$documentTemplate->tableTitle}
-    {/define}
-{/ifset}
+{* tfoot-tr }
+{define tfoot-tr}
+{/define}
+*}
+
+{* table title block }
+{define table-title}
+    {$documentTemplate->tableTitle}
+{/define}
+*}
+
+{* my row actions }
+{define row-actions}
+
+{/define}
+*}

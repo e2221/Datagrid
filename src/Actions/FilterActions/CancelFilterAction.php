@@ -9,9 +9,9 @@ use Nette\Utils\Html;
 class CancelFilterAction extends Action
 {
     protected string $class = 'btn btn-xs btn-warning';
-    protected ?string $title = 'Cancel filter';
+    protected ?string $title = 'Cancel';
 
-    public function __construct(string $name='__cancelFilter', string $title='Filter')
+    public function __construct(string $name='__cancelFilter', string $title='Cancel')
     {
         parent::__construct($name, $title);
     }
@@ -19,9 +19,9 @@ class CancelFilterAction extends Action
     public function render(): Html
     {
         $input = parent::render();
-        $input->setName('input');
+        $input->setName('button');
         $input->setAttribute('name', 'filter[cancel]');
-        $input->setAttribute('value', 'Cancel');
+        $input->setAttribute('value', $this->title);
         $input->type = 'submit';
         return $input;
     }

@@ -19,9 +19,9 @@ class FilterAction extends Action
     public function render(): Html
     {
         $input = parent::render();
-        $input->setName('input');
+        $input->setName('button');
         $input->setAttribute('name', 'filter[filter]');
-        $input->setAttribute('value', 'Filter');
+        $input->setAttribute('value', $this->title);
         $input->type = 'submit';
         return $input;
     }

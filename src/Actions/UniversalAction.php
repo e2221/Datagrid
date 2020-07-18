@@ -18,6 +18,9 @@ class UniversalAction
     /** @var string Url to signal or away */
     protected string $link='';
 
+    /** @var array Attributes to add */
+    protected array $addAttributes=[];
+
     /** @var array attributes */
     protected array $dataAttributes=[];
 
@@ -95,6 +98,7 @@ class UniversalAction
 
 
     /**
+     * Add class to existing class quee
      * @param array $addClass
      * @return UniversalAction
      */
@@ -106,6 +110,7 @@ class UniversalAction
 
 
     /**
+     * Set Span class (adds Span and set its class)
      * @param string|null $spanClass
      * @return UniversalAction
      */
@@ -116,6 +121,7 @@ class UniversalAction
     }
 
     /**
+     * Set Icon class (adds Icon and set its class)
      * @param string|null $iconClass
      * @return UniversalAction
      */
@@ -125,6 +131,16 @@ class UniversalAction
         return $this;
     }
 
+    /**
+     * Set attributes
+     * @param array $attributes
+     * @return $this
+     */
+    public function setAddAttributes(array $attributes): UniversalAction
+    {
+        $this->addAttributes = $attributes;
+        return $this;
+    }
 
 
     /**
@@ -161,6 +177,11 @@ class UniversalAction
 
         if($this->addClass !== []) {
             $a->setAttribute('class', ($this->class ? $this->class . ' ' : '') . implode(' ', $this->addClass));
+        }
+
+        foreach($this->addAttributes as $key => $value)
+        {
+            $a->setAttribute($key, $value);
         }
 
         if($this->spanClass !== null) {

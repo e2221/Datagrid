@@ -13,87 +13,106 @@
         {/foreach}
 
         {form form class => 'ajax'}
-
             {php
                 $hasActionsColumn =
-                (bool) $control->getEditFormFactory() /* we may render only one row so the form[filter] may not be created */
-                || (bool) $control->getFilterFormFactory()
-                || isset($this->blockQueue["row-actions"])
-                || $hasCustomActions
-                || $hasRowCustomActions
-                || !is_null($rowActionItemDetail);
+                    (bool) $control->getEditFormFactory() /* we may render only one row so the form[filter] may not be created */
+                    || $isFilterable
+                    || isset($this->blockQueue["row-actions"]);
+                $shouldHaveActions =
+                    $isEditable
+                    || $hasCustomActions
+                    || $hasRowCustomActions
+                    || !is_null($dataActionsColumnTemplate->getRowActionItemDetail());
                 $hasGlobalActionsColumn = isset($form['actions']);
+                $hasTitleRow =
+                    !is_null($documentTemplate->getTitleRowTemplate()->getTitleTemplate())
+                    || isset($this->blockQueue["title"])
+                    || $hasMultipleFilter;
+                $colspan = count($columns) + $hasGlobalActionsColumn + $hasActionsColumn;
 
                 foreach ($_templates as $_template):
                 $_template->params['hasActionsColumn'] = $hasActionsColumn;
                 $_template->params['hasGlobalActionsColumn'] = $hasGlobalActionsColumn;
+                $_template->params['shouldHaveActions'] = $shouldHaveActions;
+                $_template->params['hasTitleRow'] = $hasTitleRow;
                 endforeach;
                 $this->params['hasActionsColumn'] = $hasActionsColumn;
                 $this->params['hasGlobalActionsColumn'] = $hasGlobalActionsColumn;
+                $this->params['shouldHaveActions'] = $shouldHaveActions;
+                $_template->params['hasTitleRow'] = $hasTitleRow;
             }
-            {var $colspan = count($columns) + $hasGlobalActionsColumn + $hasActionsColumn}
 
             {include #table-open-tag}
-            <thead>
-                {ifset #table-title}
-                    {include #table-title-tr colspan => $colspan}
-                {/ifset}
-                {include #row-head-columns}
-                {ifset $form['filter']}
-                    {include #row-head-filter}
-                {/ifset}
-            </thead>
-            <tbody>
-            {if count($data)}
-                {foreach $data as $row}
-                    {var $primary = $control->getter($row, $rowPrimaryKey)}
-                    {var $rowId = $this->global->snippetDriver->getHtmlId("rows-$primary")}
-                    {var $itemDetailId = is_null($rowActionItemDetail) ? null : $this->global->snippetDriver->getHtmlId("itemDetail-$primary")}
-                    {include #row row => $row, rowId => $rowId, itemDetailId => $itemDetailId, primary => $primary}
-                {/foreach}
-            {else}
-                {ifset #empty-result}{include #empty-result}{/ifset}
-            {/if}
-            </tbody>
-            <tfoot n:if="isset($paginator) || $hasGlobalActionsColumn">
-            <tr>
-                <th colspan="{$colspan}">
-                    <div class="row">
-                        <div class="col col-4">
-                            {if $hasGlobalActionsColumn}
-                                {include #global-actions}
-                            {/if}
-                        </div>
-                        <div class="col col-5">
-                            <div style="text-align: center;">
-                            {ifset $paginator}
-                                {include #pagination}
-                            {/ifset}
-                            </div>
-                        </div>
-                        <div class="col col-3">
-                            {ifset $itemsCountList}
-                                <select class="form-control form-control-sm float-right datagrid-items-per-page" n:inner-foreach="$itemsCountList as $option">
-                                    <option value="{$option}" data-link="{$control->link('reload!', ['itemsPerPage' => $option])}" {$paginator->itemsPerPage == $option ? selected}>
-                                        {$option}
-                                    </option>
-                                        {last}
-                                            {ifset $allOptionTitle}
-                                                <option value="{$paginator->itemCount}" {$paginator->itemsPerPage == $paginator->itemCount ? selected} data-link="{$control->link('reload!', ['itemsPerPage' => $paginator->itemCount])}">{$allOptionTitle}</option>
+
+                {*}<thead>{*}
+                {$theadTemplate->renderStartTag()|noescape}
+                    {if $hasTitleRow}
+                        {include #table-title-tr colspan => $colspan}
+                    {/if}
+
+                    {include #row-head-columns}
+                    {ifset $form['filter']}
+                        {include #row-head-filter}
+                    {/ifset}
+                {*}</thead>{*}
+                {$theadTemplate->renderEndTag()|noescape}
+
+                {*}<tbody>{*}
+                {$tbodyTemplate->renderStartTag()|noescape}
+                    {if count($data)}
+                        {foreach $data as $row}
+                            {var $primary = $control->getter($row, $rowPrimaryKey)}
+                            {var $rowId = $this->global->snippetDriver->getHtmlId("rows-$primary")}
+                            {var $itemDetailId = is_null($dataActionsColumnTemplate->getRowActionItemDetail()) ? null : $this->global->snippetDriver->getHtmlId("itemDetail-$primary")}
+
+                            {include #row row => $row, rowId => $rowId, itemDetailId => $itemDetailId, primary => $primary}
+                        {/foreach}
+                    {else}
+                        {ifset #empty-result}{include #empty-result}{/ifset}
+                    {/if}
+                {*}</tbody>{*}
+                {$tbodyTemplate->renderEndTag()|noescape}
+
+                <tfoot n:if="isset($paginator) || $hasGlobalActionsColumn">
+                    {ifset #tfoot-tr}
+                        {include #tfoot-tr}
+                    {else}
+                        <tr>
+                            <th colspan="{$colspan}">
+                                <div class="row">
+                                    <div class="col col-4">
+                                        {if $hasGlobalActionsColumn}
+                                            {include #global-actions}
+                                        {/if}
+                                    </div>
+                                    <div class="col col-5">
+                                        <div style="text-align: center;">
+                                            {ifset $paginator}
+                                                {include #pagination}
                                             {/ifset}
-                                        {/last}
-                                </select>
-                                <small class="text-muted float-right">(Items: {$paginator->page * $paginator->length - $paginator->length + 1} - {$paginator->page * $paginator->length} from {$paginator->itemCount})</small>
-                            {/ifset}
-
-                        </div>
-                    </div>
-
-
-                </th>
-            </tr>
-            </tfoot>
-            {include #table-close-tag}
+                                        </div>
+                                    </div>
+                                    <div class="col col-3">
+                                        {ifset $itemsCountList}
+                                            <select class="form-control form-control-sm float-right datagrid-items-per-page" n:inner-foreach="$itemsCountList as $option">
+                                                <option value="{$option}" data-link="{$control->link('reload!', ['itemsPerPage' => $option])}" {$paginator->itemsPerPage == $option ? selected}>
+                                                    {$option}
+                                                </option>
+                                                {last}
+                                                    {ifset $allOptionTitle}
+                                                        <option value="{$paginator->itemCount}" {$paginator->itemsPerPage == $paginator->itemCount ? selected} data-link="{$control->link('reload!', ['itemsPerPage' => $paginator->itemCount])}">{$allOptionTitle}</option>
+                                                    {/ifset}
+                                                {/last}
+                                            </select>
+                                            <small class="text-muted float-right">(Items: {$paginator->page * $paginator->length - $paginator->length + 1} - {$paginator->page * $paginator->length} from {$paginator->itemCount})</small>
+                                        {/ifset}
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    {/ifset}
+                </tfoot>
+            {include #table-close-tag colspan => $colspan}
 
         {/form}
 

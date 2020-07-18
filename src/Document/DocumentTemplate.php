@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid\Document;
 
-use Nette\Utils\Html;
+use e2221\Datagrid\Datagrid;
 
 class DocumentTemplate
 {
@@ -31,12 +31,116 @@ class DocumentTemplate
     /** @var bool Sets table borderless */
     public bool $borderless = false;
 
-    /** @var bool Hides table header */
+    /** TODO @var bool Hides table header */
     public bool $hideTableHeader = false;
 
-    /** @var string|Html|null Table title */
-    public $tableTitle = null;
+    /** @var TheadTemplate template to style <thead> tag */
+    protected TheadTemplate $theadTemplate;
 
+    /** @var TbodyTemplate template to style <tbody> tag */
+    protected TbodyTemplate $tbodyTemplate;
+
+    /** @var TfootTemplate template to style <tfoot> tag */
+    protected TfootTemplate $tfootTemplate;
+
+    /** @var TitleRowTemplate template to style all components from title row */
+    protected TitleRowTemplate $titleRowTemplate;
+
+    /** @var HeadRowTemplate template to style all components from head row */
+    protected HeadRowTemplate $headRowTemplate;
+
+    /** @var HeadFilterRowTemplate template to style all components from head-filter row */
+    protected HeadFilterRowTemplate $headFilterRowTemplate;
+
+    /** @var DataRowTemplate template to style all components from data row */
+    protected DataRowTemplate $dataRowTemplate;
+
+    /** @var ItemDetailRow template to style all components from item detail row */
+    protected ItemDetailRow $itemDetailRow;
+
+    protected Datagrid $datagrid;
+
+    public function __construct(Datagrid $datagrid)
+    {
+        $this->datagrid = $datagrid;
+        $this->theadTemplate = new TheadTemplate();
+        $this->tbodyTemplate = new TbodyTemplate();
+        $this->tfootTemplate = new TfootTemplate();
+        $this->titleRowTemplate = new TitleRowTemplate();
+        $this->headRowTemplate = new HeadRowTemplate();
+        $this->headFilterRowTemplate = new HeadFilterRowTemplate();
+        $this->dataRowTemplate = new DataRowTemplate(null, null, null, $datagrid);
+        $this->itemDetailRow = new ItemDetailRow();
+    }
+
+    /**
+     * @return TheadTemplate
+     */
+    public function getTheadTemplate(): TheadTemplate
+    {
+        return $this->theadTemplate;
+    }
+
+    /**
+     * @return TbodyTemplate
+     */
+    public function getTbodyTemplate(): TbodyTemplate
+    {
+        return $this->tbodyTemplate;
+    }
+
+    /**
+     * @return TfootTemplate
+     */
+    public function getTfootTemplate(): TfootTemplate
+    {
+        return $this->tfootTemplate;
+    }
+
+    /**
+     * @return TitleRowTemplate
+     */
+    public function getTitleRowTemplate(): TitleRowTemplate
+    {
+        return $this->titleRowTemplate;
+    }
+
+    /**
+     * @return HeadRowTemplate
+     */
+    public function getHeadRowTemplate(): HeadRowTemplate
+    {
+        return $this->headRowTemplate;
+    }
+
+    /**
+     * @return HeadFilterRowTemplate
+     */
+    public function getHeadFilterRowTemplate(): HeadFilterRowTemplate
+    {
+        return $this->headFilterRowTemplate;
+    }
+
+    /**
+     * @return DataRowTemplate
+     */
+    public function getDataRowTemplate(): DataRowTemplate
+    {
+        return $this->dataRowTemplate;
+    }
+
+    /**
+     * @return ItemDetailRow
+     */
+    public function getItemDetailRow(): ItemDetailRow
+    {
+        return $this->itemDetailRow;
+    }
+
+    /**
+     * Table document
+     * ****************************************************************
+     */
 
     /**
      * Set class that will be added
@@ -57,18 +161,6 @@ class DocumentTemplate
     public function setAttributes(?array $attributes): DocumentTemplate
     {
         $this->attributes = $attributes;
-        return $this;
-    }
-
-
-    /**
-     * Sets table title
-     * @param string|null|Html $tableTitle
-     * @return DocumentTemplate
-     */
-    public function setTableTitle($tableTitle): DocumentTemplate
-    {
-        $this->tableTitle = $tableTitle;
         return $this;
     }
 
@@ -95,8 +187,6 @@ class DocumentTemplate
         $this->hideTableHeader = $hideTableHeader;
         return $this;
     }
-
-
 
     /**
      * Set table class

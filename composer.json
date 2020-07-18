@@ -10,7 +10,8 @@
         "nette/utils": "~3.0",
         "latte/latte": "~2.5",
         "nextras/datagrid": "v3.1.1",
-        "nittro/nette-bridges": "^2.1"
+        "nittro/nette-bridges": "^2.1",
+        "e2221/html-element": "^1.6"
     },
     "config": {
         "platform": {

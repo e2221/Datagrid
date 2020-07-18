@@ -3,17 +3,31 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid;
 
-use e2221\Datagrid\Actions\FilterActions\CancelFilterAction;
-use e2221\Datagrid\Actions\FilterActions\FilterAction;
 use e2221\Datagrid\Actions\HeaderActions\CustomAction;
-use e2221\Datagrid\Actions\RowActions\RowActionCancel;
-use e2221\Datagrid\Actions\RowActions\RowActionEdit;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
-use e2221\Datagrid\Actions\RowActions\RowActionSave;
 use e2221\Datagrid\Actions\RowActions\RowCustomAction;
 use e2221\Datagrid\Column\ColumnExtended;
+use e2221\Datagrid\Document\DataActionsColumnTemplate;
+use e2221\Datagrid\Document\DataColumnTemplate;
+use e2221\Datagrid\Document\DataRowTemplate;
 use e2221\Datagrid\Document\DocumentTemplate;
+use e2221\Datagrid\Document\HeadActionsColumnTemplate;
+use e2221\Datagrid\Document\HeadColumnTemplate;
+use e2221\Datagrid\Document\HeadFilterActionsColumnTemplate;
+use e2221\Datagrid\Document\HeadFilterColumnTemplate;
+use e2221\Datagrid\Document\HeadFilterRowTemplate;
+use e2221\Datagrid\Document\HeadRowTemplate;
+use e2221\Datagrid\Document\ItemDetailColumn;
+use e2221\Datagrid\Document\ItemDetailRow;
+use e2221\Datagrid\Document\MultipleFilterTemplate;
+use e2221\Datagrid\Document\TbodyTemplate;
+use e2221\Datagrid\Document\TfootTemplate;
+use e2221\Datagrid\Document\TheadTemplate;
+use e2221\Datagrid\Document\TitleColumnTemplate;
+use e2221\Datagrid\Document\TitleRowTemplate;
+use e2221\Datagrid\Document\TitleTemplate;
 use Exception;
+use Nette\Application\UI;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\ComponentModel\IComponent;
 use Nette\Forms\Container;
@@ -39,26 +53,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var array Head actions */
     protected array $customActions=[];
 
-    /** @var FilterAction|null filter button style instance */
-    protected ?FilterAction $filterButton=null;
-
-    /** @var CancelFilterAction|null cancel filter button style instance */
-    protected ?CancelFilterAction $cancelFilterButton=null;
-
     /** @var array Row custom actions */
     protected array $rowCustomActions=[];
-
-    /** @var RowActionEdit instance of row action - Edit button */
-    protected RowActionEdit $rowActionEdit;
-
-    /** @var RowActionSave instance of row action - Save button */
-    protected RowActionSave $rowActionSave;
-
-    /** @var RowActionCancel instance of row action - Cancel button */
-    protected RowActionCancel $rowActionCancel;
-
-    /** @var RowActionItemDetail|null instance of row action - Item detail */
-    protected ?RowActionItemDetail $rowActionItemDetail=null;
 
     /** @var DocumentTemplate Document layout instance */
     protected DocumentTemplate $documentTemplate;
@@ -75,15 +71,19 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var int|null @persistent Paginator - items per page */
     public ?int $itemsPerPage=null;
 
+    /** @var callable */
+    protected $multipleFilterFormFactory;
+
+
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
-        $this->filterButton = new FilterAction();
-        $this->cancelFilterButton = new CancelFilterAction();
-        $this->documentTemplate = new DocumentTemplate();
-        $this->rowActionEdit = new RowActionEdit('__edit', 'Edit', $this);
-        $this->rowActionSave = new RowActionSave('__save', 'Save');
-        $this->rowActionCancel = new RowActionCancel('__cancel', 'Cancel');
+        $this->documentTemplate = new DocumentTemplate($this);
+    }
+
+    public function getPrimaryEditKey()
+    {
+        return $this->editRowKey;
     }
 
     /**
@@ -94,55 +94,13 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      */
     public function setRowActionItemDetail(string $name='__rowItemDetail', string $title='Show detail'): RowActionItemDetail
     {
-        return $this->rowActionItemDetail = new RowActionItemDetail($name, $title);
+        return $this->documentTemplate
+            ->getDataRowTemplate()
+            ->getDataActionsColumnTemplate()
+            ->setRowActionItemDetail($name, $title);
+
     }
 
-    /**
-     * Row Action - Save button instance
-     * @return RowActionSave
-     */
-    public function getRowActionSave(): RowActionSave
-    {
-        return $this->rowActionSave;
-    }
-
-    /**
-     * Row Action - Cancel button instance
-     * @return RowActionCancel
-     */
-    public function getRowActionCancel(): RowActionCancel
-    {
-        return $this->rowActionCancel;
-    }
-
-
-    /**
-     * Row Action - EDIT button instance
-     * @return RowActionEdit|null
-     */
-    public function getRowActionEdit(): ?RowActionEdit
-    {
-        return $this->rowActionEdit;
-    }
-
-
-    /**
-     * Head Action - CANCEL FIlTER button instance
-     * @return CancelFilterAction|null
-     */
-    public function getCancelFilterButton(): ?CancelFilterAction
-    {
-        return $this->cancelFilterButton;
-    }
-
-    /**
-     * Head Action - FILTER button instance
-     * @return FilterAction|null
-     */
-    public function getFilterButton(): ?FilterAction
-    {
-        return $this->filterButton;
-    }
 
     /**
      * Get document template to style
@@ -152,7 +110,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         return $this->documentTemplate;
     }
-    
+
 
     /**
      * Generates universal Form Container
@@ -162,6 +120,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * @param string $html
      * @param bool $required
      * @param array $selection
+     * @param array $htmlDecorations
      * @return Container
      */
     private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null, array $htmlDecorations=[]): Container
@@ -218,8 +177,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $filterableColumns[$columnName] = $column;
                 $this->isFilterable = TRUE;
             }
-            if($column->isMultipleFilterable())
-                $this->isMultipleFilterable = TRUE;
         }
         return $filterableColumns;
     }
@@ -237,12 +194,51 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $form = new Container();
                 foreach($filterableColumns as $name => $column)
                 {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection());
+                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
                 }
                 $form->addSubmit('filter', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
                 $form->addSubmit('cancel', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
                 return $form;
             });
+        }
+    }
+
+    /**
+     * Get multiple filterable columns
+     * @return array
+     */
+    private function getMultipleFilterableColumns(): array
+    {
+        $multipleFColumns = [];
+        foreach ($this->columns as $columnName => $column)
+        {
+            if($column->isMultipleFilterable())
+            {
+                $multipleFColumns[$columnName] = $column;
+                $this->isMultipleFilterable = TRUE;
+            }
+        }
+        return $multipleFColumns;
+    }
+
+    /**
+     * Generate multiple filter form factory
+     */
+    private function generateMultipleFilterFormFactory(): void
+    {
+        $multipleColumns = $this->getMultipleFilterableColumns();
+        if(count($multipleColumns) > 0)
+        {
+            $this->multipleFilterFormFactory = function () use ($multipleColumns) {
+                $form = new Container();
+                foreach($multipleColumns as $name => $column)
+                {
+                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
+                }
+                $form->addSubmit('filterMultiple', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
+                $form->addSubmit('cancelMultiple', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
+                return $form;
+            };
         }
     }
 
@@ -278,7 +274,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $form = new Container();
                 foreach($editableColumns as $name => $column)
                 {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection());
+                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
                 }
                 $form->addSubmit('save', 'Save');
                 $form->addSubmit('cancel', 'Cancel');
@@ -354,7 +350,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->redrawControl('rows');
     }
 
-
     /**
      * @param array $params
      */
@@ -367,6 +362,9 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
         //generate edit form factory
         $this->generateEditFormFactory();
+
+        //generate multiple filter form factory
+        $this->generateMultipleFilterFormFactory();
     }
 
 
@@ -379,44 +377,264 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         if ($this->filterFormFactory) {
             $this['form']['filter']->setDefaults($this->filter);
         }
+        if($this->multipleFilterFormFactory && array_key_exists('_multiple', $this->filter)) {
+            $this['form']['filterMultiple']->setDefaults($this->filter['_multiple']);
+        }
 
         if($this->paginator instanceof Paginator && !is_null($this->itemsPerPage))
             $this->paginator->itemsPerPage = $this->itemsPerPage;
 
-        $this->template->filterButton = $this->filterButton;
-        $this->template->cancelFilterButton = $this->cancelFilterButton;
-        $this->template->isFilterable = $this->isFilterable;
-        $this->template->isEditable = $this->isEditable;
+        $this->template->customActions = $this->customActions;
+        $this->template->rowCustomActions = $this->rowCustomActions;
         $this->template->hasCustomActions = count($this->customActions) > 0;
         $this->template->hasRowCustomActions = count($this->rowCustomActions) > 0;
-        $this->template->rowCustomActions = $this->rowCustomActions;
-        $this->template->documentTemplate = $this->getDocumentTemplate();
-        $this->template->rowActionEdit = $this->rowActionEdit;
-        $this->template->rowActionSave = $this->rowActionSave;
-        $this->template->rowActionCancel = $this->rowActionCancel;
-        $this->template->rowActionItemDetail = $this->rowActionItemDetail;
+        $this->template->isFilterable = $this->isFilterable;
+        $this->template->isEditable = $this->isEditable;
+        $this->template->hasMultipleFilter = $this->isMultipleFilterable;
+        $this->template->itemsPerPage = $this->itemsPerPage;
         $this->template->uniqueHash = $this->uniqueHash;
         $this->template->itemsCountList = $this->itemsCountList;
         $this->template->allOptionTitle = $this->allOptionTitle;
-        $this->template->itemsPerPage = $this->itemsPerPage;
-        $this->template->hasMultipleFilter = $this->isMultipleFilterable;
 
+        /*$this->template->filterButton = $this->documentTemplate->getFilterButton();
+        $this->template->cancelFilterButton = $this->documentTemplate->getCancelFilterButton();
+        $this->template->rowActionEdit = $this->documentTemplate->getRowActionEdit();
+        $this->template->rowActionSave = $this->documentTemplate->getRowActionSave();
+        $this->template->rowActionCancel = $this->documentTemplate->getRowActionCancel();
+        $this->template->rowActionItemDetail = $this->documentTemplate->getRowActionItemDetail();*/
+
+        //templates
+
+        /**
+         * thead
+         * tbody
+         * TitleRow (title <tr> tag with ?TitleTemplate and RowHeadFilterTemplate, ColumnTitleTemplate)
+         * HeadRow (headRow <tr> tag with HeadColumn, HeadActionColumn)
+         * HeadFilterRow (headFilterRow <tr> tag with HeadFilterColumn, HeadFilterActionsColumn - include FilterButton and CancelButton)
+         * DataRow (dataRow <tr> tag with dataColumn, rowActionsColumn - include Edit, Save, Cancel, ItemDetail buttons)
+         * FooterRow (<tfooter> tag)
+         */
+        $this->template->documentTemplate = $this->getDocumentTemplate();
+        $this->template->theadTemplate = $this->documentTemplate->getTheadTemplate();
+        $this->template->tbodyTemplate = $this->documentTemplate->getTbodyTemplate();
+        //title Row Parts
+        $titleRowTemplate = $this->documentTemplate->getTitleRowTemplate();
+        $this->template->titleRowTemplate = $titleRowTemplate;
+        $this->template->titleColumnTemplate = $titleRowTemplate->getColumnTitleTemplate();
+        $this->template->titleTemplate = $titleRowTemplate->getTitleTemplate();
+        $this->template->multipleFilterTemplate = $titleRowTemplate->getMultipleFilterTemplate();
+        //header Row parts
+        $headRowTemplate = $this->documentTemplate->getHeadRowTemplate();
+        $this->template->headRowTemplate = $headRowTemplate;
+        $this->template->headColumnTemplate = $headRowTemplate->getColumnHeadTemplate();
+        $this->template->headActionsColumnTemplate = $headRowTemplate->getColumnActionsHeadTemplate();
+        //filter row parts
+        $filterRowTemplate = $this->documentTemplate->getHeadFilterRowTemplate();
+        $this->template->headFilterRowTemplate = $filterRowTemplate;
+        $this->template->headFilterColumnTemplate = $filterRowTemplate->getHeadFilterColumnTemplate();
+        $this->template->headFilterActionsColumnTemplate = $filterRowTemplate->getHeadFilterActionsColumnTemplate();
+        //data row parts
+        $dataRowTemplate = $this->documentTemplate->getDataRowTemplate();
+        $this->template->dataRowTemplate = $dataRowTemplate;
+        $this->template->dataColumnTemplate = $dataRowTemplate->getDataColumnTemplate();
+        $this->template->dataActionsColumnTemplate = $dataRowTemplate->getDataActionsColumnTemplate();
+        //item detail row parts
+        $itemDetailRow = $this->documentTemplate->getItemDetailRow();
+        $this->template->itemDetailRowTemplate = $itemDetailRow;
+        $this->template->itemDetailColumnTemplate = $itemDetailRow->getItemDetailColumn();
+
+        //from Nextras/datagrid
         $this->template->form = $this['form'];
         $this->template->data = $this->getData();
         $this->template->columns = $this->columns;
-        $this->template->customActions = $this->customActions;
         $this->template->editRowKey = $this->editRowKey;
         $this->template->rowPrimaryKey = $this->rowPrimaryKey;
         $this->template->paginator = $this->paginator;
         $this->template->sendOnlyRowParentSnippet = $this->sendOnlyRowParentSnippet;
         $this->template->cellsTemplates = $this->getCellsTemplates();
-        $this->template->showFilterCancel = $this->filterDataSource != $this->filterDefaults; // @ intentionaly
+        $this->template->showFilterCancel = $this->showCancelFilterButton(); // @ intentionaly
         $this->template->setFile(__DIR__ . '/templates/Datagrid.latte');
 
         $this->onRender($this);
         $this->template->render();
     }
 
+    /**
+     * Show cacnecl filter button?
+     * @return bool
+     */
+    private function showCancelFilterButton(): bool
+    {
+        $filter = $this->filterDataSource;
+        if(array_key_exists('_multiple', $filter))
+            unset($filter['_multiple']);
+        return $filter != $this->filterDefaults;
+    }
+
+    /**
+     * Rewrited createComponentForm => filterMultiple added
+     * @return UI\Form
+     */
+    public function createComponentForm()
+    {
+        $form = parent::createComponentForm();
+        if($this->multipleFilterFormFactory)
+        {
+            $form['filterMultiple'] = call_user_func($this->multipleFilterFormFactory);
+
+        }
+        return $form;
+    }
+
+    /**
+     * Gets multiple filter columns (columns without excluded columns)
+     * @param string $columnN
+     * @return array
+     */
+    private function getMultipleFilterColumns(string $columnN): array
+    {
+        $column = $this->columns[$columnN];
+        $columns = [];
+        foreach($this->columns as $columnName => $col)
+        {
+            if($columnN !== $columnName && !in_array($columnName, $column->getListExcludedFromMultipleFilter()))
+                $columns[] = $columnName;
+        }
+        return $columns;
+    }
+
+    /**
+     * Rewrite processForm to implemetn filter multiple
+     * @param UI\Form $form
+     * @throws \Nette\Application\AbortException
+     */
+    public function processForm(UI\Form $form)
+    {
+        if (isset($form['filterMultiple'])) {
+            if ($form['filterMultiple']['filterMultiple']->isSubmittedBy()) {
+                $values = $form['filterMultiple']->getValues(true);
+                unset($values['filterMultiple']);
+                $values = $this->filterFormFilter($values);
+
+                foreach($values as $valueK => $val)
+                {
+                    foreach($this->getMultipleFilterColumns($valueK) as $k)
+                    {
+                        $values[$k] = $val;
+                    }
+                }
+
+                if ($this->paginator) {
+                    $this->page = $this->paginator->page = 1;
+                }
+                $this->filter['_multiple'] = $this->filterDataSource['_multiple'] = $values;
+                $this->redrawControl('rows');
+                return;
+            } elseif ($form['filterMultiple']['cancelMultiple']->isSubmittedBy()) {
+                if ($this->paginator) {
+                    $this->page = $this->paginator->page = 1;
+                }
+                unset($this->filterDataSource['_multiple']);
+                $this->filter = $this->filterDataSource;
+                $form['filterMultiple']->setValues([], true);
+                $this->redrawControl('rows');
+                return;
+            }
+        }
+        $allowRedirect = true;
+        if (isset($form['edit'])) {
+            if ($form['edit']['save']->isSubmittedBy()) {
+                if ($form['edit']->isValid()) {
+                    call_user_func($this->editFormCallback, $form['edit']);
+                } else {
+                    $this->editRowKey = $form['edit'][$this->rowPrimaryKey]->getValue();
+                    $allowRedirect = false;
+                }
+            }
+            if ($form['edit']['cancel']->isSubmittedBy() || ($form['edit']['save']->isSubmittedBy() && $form['edit']->isValid())) {
+                $editRowKey = $form['edit'][$this->rowPrimaryKey]->getValue();
+                $this->redrawRow($editRowKey);
+                $this->getData($editRowKey);
+            }
+            if ($this->editRowKey !== null) {
+                $this->redrawRow($this->editRowKey);
+            }
+        }
+
+        if (isset($form['filter'])) {
+            if ($form['filter']['filter']->isSubmittedBy()) {
+                $values = $form['filter']->getValues(true);
+                unset($values['filter']);
+                $values = $this->filterFormFilter($values);
+                if ($this->paginator) {
+                    $this->page = $this->paginator->page = 1;
+                }
+                if(isset($this->filterDataSource['_multiple']))
+                    $values['_multiple'] = $this->filterDataSource['_multiple'];
+                $this->filter = $this->filterDataSource = $values;
+                $this->redrawControl('rows');
+            } elseif ($form['filter']['cancel']->isSubmittedBy()) {
+                if ($this->paginator) {
+                    $this->page = $this->paginator->page = 1;
+                }
+
+                $filterDefault = $this->filterDefaults;
+                if(isset($this->filterDataSource['_multiple']))
+                    $filterDefault['_multiple'] = $this->filterDataSource['_multiple'];
+                $this->filter = $this->filterDataSource = $filterDefault;
+                $form['filter']->setValues($this->filter, true);
+                $this->redrawControl('rows');
+            }
+        }
+
+        if (isset($form['actions'])) {
+            if ($form['actions']['process']->isSubmittedBy()) {
+                $action = $form['actions']['action']->getValue();
+                if ($action) {
+                    $rows = [];
+                    foreach($this->getData() as $row) {
+                        $rows[] = $this->getter($row, $this->rowPrimaryKey);
+                    }
+                    $ids = array_intersect($rows, $form->getHttpData($form::DATA_TEXT, 'actions[items][]'));
+                    $callback = $this->globalActions[$action][1];
+                    $callback($ids, $this);
+                    $this->data = null;
+                    $form['actions']->setValues(['action' => null, 'items' => []]);
+                }
+            }
+        }
+
+        if (!$this->presenter->isAjax() && $allowRedirect) {
+            $this->redirect('this');
+        }
+    }
+
+    /**
+     * Copy from Nextras - private
+     * @param array $values
+     * @return array
+     */
+    private function filterFormFilter(array $values)
+    {
+        $filtered = [];
+        foreach ($values as $key => $value) {
+            $isDefaultDifferent = isset($this->filterDefaults[$key]) && $this->filterDefaults[$key] !== $value;
+            if ($isDefaultDifferent || !self::isEmptyValue($value)) {
+                $filtered[$key] = $value;
+            }
+        }
+        return $filtered;
+    }
+
+    /**
+     * Copy from Nextras - private
+     * @param $value
+     * @return bool
+     */
+    private static function isEmptyValue($value)
+    {
+        return $value === NULL || $value === '' || $value === [] || $value === false;
+    }
 
 
 }
@@ -437,21 +655,55 @@ class DatagridTemplate extends Template
     public array $cellsTemplates;
     public bool $showFilterCancel;
     public array $customActions;
-    public ?FilterAction $filterButton;
-    public ?CancelFilterAction $cancelFilterButton;
     public bool $isEditable;
     public bool $isFilterable;
     public bool $hasCustomActions;
     public bool $hasRowCustomActions;
     public array $rowCustomActions;
     public DocumentTemplate $documentTemplate;
-    public RowActionEdit $rowActionEdit;
-    public RowActionSave $rowActionSave;
-    public RowActionCancel $rowActionCancel;
-    public ?RowActionItemDetail $rowActionItemDetail;
     public string $uniqueHash;
     public ?array $itemsCountList;
     public ?string $allOptionTitle;
     public ?int $itemsPerPage;
     public bool $hasMultipleFilter;
+
+
+    public TheadTemplate $theadTemplate;
+    public TbodyTemplate $tbodyTemplate;
+    public TfootTemplate $tfootTemplate;
+    public TitleRowTemplate $titleRowTemplate;
+    public TitleColumnTemplate $titleColumnTemplate;
+    public ?TitleTemplate $titleTemplate;
+    public MultipleFilterTemplate $multipleFilterTemplate;
+    public HeadRowTemplate $headRowTemplate;
+    public HeadColumnTemplate $headColumnTemplate;
+    public HeadActionsColumnTemplate $headActionsColumnTemplate;
+    public HeadFilterRowTemplate $headFilterRowTemplate;
+    public HeadFilterColumnTemplate $headFilterColumnTemplate;
+    public HeadFilterActionsColumnTemplate $headFilterActionsColumnTemplate;
+    public DataRowTemplate $dataRowTemplate;
+    public DataColumnTemplate $dataColumnTemplate;
+    public DataActionsColumnTemplate $dataActionsColumnTemplate;
+    public ItemDetailRow $itemDetailRowTemplate;
+    public ItemDetailColumn $itemDetailColumnTemplate;
+
+
+    /* templates */
+    /*
+    public ?FilterAction $filterButton;
+    public ?CancelFilterAction $cancelFilterButton;
+    public RowActionEdit $rowActionEdit;
+    public RowActionSave $rowActionSave;
+    public RowActionCancel $rowActionCancel;
+    public ?RowActionItemDetail $rowActionItemDetail;
+    public MultipleFilterTemplate $multipleFilterTemplate;
+    public TheadTemplate $theadTemplate;
+    public TbodyTemplate $tbodyTemplate;
+    public HeadRowTemplate $rowHeadTrTemplate;
+    public DataRowTemplate $rowTemplate;
+    public HeadFilterRowTemplate $rowHeadFilterTemplate;
+    public ?TitleTemplate $titleTemplate;
+    public TitleRowTemplate $rowHeadTitleTemplate;
+    public TitleColumnTemplate $columnHeadTitleTemplate;
+    public DataColumnTemplate $columnTemplate;*/
 }
