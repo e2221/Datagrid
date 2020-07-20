@@ -27,6 +27,7 @@ use e2221\Datagrid\Document\TitleColumnTemplate;
 use e2221\Datagrid\Document\TitleRowTemplate;
 use e2221\Datagrid\Document\TitleTemplate;
 use Exception;
+use Nette\Application\AbortException;
 use Nette\Application\UI;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\ComponentModel\IComponent;
@@ -81,11 +82,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->documentTemplate = new DocumentTemplate($this);
     }
 
-    public function getPrimaryEditKey()
-    {
-        return $this->editRowKey;
-    }
-
     /**
      * Row Action - Item detail setter
      * @param string $name
@@ -98,7 +94,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             ->getDataRowTemplate()
             ->getDataActionsColumnTemplate()
             ->setRowActionItemDetail($name, $title);
-
     }
 
 
@@ -155,7 +150,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * load parent getCellsTemplates() and add defaultTemplate.blocks.latte
      * @return array
      */
-    public function getCellsTemplates()
+    public function getCellsTemplates(): array
     {
         $this->addCellsTemplate(__DIR__ . '/templates/defaultTemplate.blocks.latte');
         return parent::getCellsTemplates();
@@ -333,12 +328,14 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * @param callable|null $itemsCountCallback
      * @param array|null $itemsCountList
      * @param string|null $allOptionTitle
+     * @return Datagrid
      */
-    public function setPagination($itemsPerPage, callable $itemsCountCallback = null, ?array $itemsCountList = null, ?string $allOptionTitle = null)
+    public function setPagination($itemsPerPage, callable $itemsCountCallback = null, ?array $itemsCountList = null, ?string $allOptionTitle = null): Datagrid
     {
         parent::setPagination($this->itemsPerPage ?? $itemsPerPage, $itemsCountCallback);
         $this->itemsCountList = $itemsCountList;
         $this->allOptionTitle = $allOptionTitle;
+        return $this;
     }
 
 
@@ -395,28 +392,10 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->uniqueHash = $this->uniqueHash;
         $this->template->itemsCountList = $this->itemsCountList;
         $this->template->allOptionTitle = $this->allOptionTitle;
-
-        /*$this->template->filterButton = $this->documentTemplate->getFilterButton();
-        $this->template->cancelFilterButton = $this->documentTemplate->getCancelFilterButton();
-        $this->template->rowActionEdit = $this->documentTemplate->getRowActionEdit();
-        $this->template->rowActionSave = $this->documentTemplate->getRowActionSave();
-        $this->template->rowActionCancel = $this->documentTemplate->getRowActionCancel();
-        $this->template->rowActionItemDetail = $this->documentTemplate->getRowActionItemDetail();*/
-
-        //templates
-
-        /**
-         * thead
-         * tbody
-         * TitleRow (title <tr> tag with ?TitleTemplate and RowHeadFilterTemplate, ColumnTitleTemplate)
-         * HeadRow (headRow <tr> tag with HeadColumn, HeadActionColumn)
-         * HeadFilterRow (headFilterRow <tr> tag with HeadFilterColumn, HeadFilterActionsColumn - include FilterButton and CancelButton)
-         * DataRow (dataRow <tr> tag with dataColumn, rowActionsColumn - include Edit, Save, Cancel, ItemDetail buttons)
-         * FooterRow (<tfooter> tag)
-         */
         $this->template->documentTemplate = $this->getDocumentTemplate();
         $this->template->theadTemplate = $this->documentTemplate->getTheadTemplate();
         $this->template->tbodyTemplate = $this->documentTemplate->getTbodyTemplate();
+        $this->template->tfootTemplate = $this->documentTemplate->getTfootTemplate();
         //title Row Parts
         $titleRowTemplate = $this->documentTemplate->getTitleRowTemplate();
         $this->template->titleRowTemplate = $titleRowTemplate;
@@ -506,7 +485,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /**
      * Rewrite processForm to implemetn filter multiple
      * @param UI\Form $form
-     * @throws \Nette\Application\AbortException
+     * @throws AbortException
      */
     public function processForm(UI\Form $form)
     {
@@ -667,7 +646,6 @@ class DatagridTemplate extends Template
     public ?int $itemsPerPage;
     public bool $hasMultipleFilter;
 
-
     public TheadTemplate $theadTemplate;
     public TbodyTemplate $tbodyTemplate;
     public TfootTemplate $tfootTemplate;
@@ -686,24 +664,4 @@ class DatagridTemplate extends Template
     public DataActionsColumnTemplate $dataActionsColumnTemplate;
     public ItemDetailRow $itemDetailRowTemplate;
     public ItemDetailColumn $itemDetailColumnTemplate;
-
-
-    /* templates */
-    /*
-    public ?FilterAction $filterButton;
-    public ?CancelFilterAction $cancelFilterButton;
-    public RowActionEdit $rowActionEdit;
-    public RowActionSave $rowActionSave;
-    public RowActionCancel $rowActionCancel;
-    public ?RowActionItemDetail $rowActionItemDetail;
-    public MultipleFilterTemplate $multipleFilterTemplate;
-    public TheadTemplate $theadTemplate;
-    public TbodyTemplate $tbodyTemplate;
-    public HeadRowTemplate $rowHeadTrTemplate;
-    public DataRowTemplate $rowTemplate;
-    public HeadFilterRowTemplate $rowHeadFilterTemplate;
-    public ?TitleTemplate $titleTemplate;
-    public TitleRowTemplate $rowHeadTitleTemplate;
-    public TitleColumnTemplate $columnHeadTitleTemplate;
-    public DataColumnTemplate $columnTemplate;*/
 }

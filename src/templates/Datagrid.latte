@@ -73,45 +73,47 @@
                 {*}</tbody>{*}
                 {$tbodyTemplate->renderEndTag()|noescape}
 
-                <tfoot n:if="isset($paginator) || $hasGlobalActionsColumn">
-                    {ifset #tfoot-tr}
-                        {include #tfoot-tr}
-                    {else}
-                        <tr>
-                            <th colspan="{$colspan}">
-                                <div class="row">
-                                    <div class="col col-4">
-                                        {if $hasGlobalActionsColumn}
-                                            {include #global-actions}
-                                        {/if}
-                                    </div>
-                                    <div class="col col-5">
-                                        <div style="text-align: center;">
-                                            {ifset $paginator}
-                                                {include #pagination}
+                {if isset($paginator) || $hasGlobalActionsColumn}
+                    {$tfootTemplate->renderStartTag()|noescape}
+                        {ifset #tfoot-tr}
+                            {include #tfoot-tr}
+                        {else}
+                            <tr>
+                                <th colspan="{$colspan}">
+                                    <div class="row">
+                                        <div class="col col-4">
+                                            {if $hasGlobalActionsColumn}
+                                                {include #global-actions}
+                                            {/if}
+                                        </div>
+                                        <div class="col col-5">
+                                            <div style="text-align: center;">
+                                                {ifset $paginator}
+                                                    {include #pagination}
+                                                {/ifset}
+                                            </div>
+                                        </div>
+                                        <div class="col col-3">
+                                            {ifset $itemsCountList}
+                                                <select class="form-control form-control-sm float-right datagrid-items-per-page" n:inner-foreach="$itemsCountList as $option">
+                                                    <option value="{$option}" data-link="{$control->link('reload!', ['itemsPerPage' => $option])}" {$paginator->itemsPerPage == $option ? selected}>
+                                                        {$option}
+                                                    </option>
+                                                    {last}
+                                                        {ifset $allOptionTitle}
+                                                            <option value="{$paginator->itemCount}" {$paginator->itemsPerPage == $paginator->itemCount ? selected} data-link="{$control->link('reload!', ['itemsPerPage' => $paginator->itemCount])}">{$allOptionTitle}</option>
+                                                        {/ifset}
+                                                    {/last}
+                                                </select>
+                                                <small class="text-muted float-right">(Items: {$paginator->page * $paginator->length - $paginator->length + 1} - {$paginator->page * $paginator->length} from {$paginator->itemCount})</small>
                                             {/ifset}
                                         </div>
                                     </div>
-                                    <div class="col col-3">
-                                        {ifset $itemsCountList}
-                                            <select class="form-control form-control-sm float-right datagrid-items-per-page" n:inner-foreach="$itemsCountList as $option">
-                                                <option value="{$option}" data-link="{$control->link('reload!', ['itemsPerPage' => $option])}" {$paginator->itemsPerPage == $option ? selected}>
-                                                    {$option}
-                                                </option>
-                                                {last}
-                                                    {ifset $allOptionTitle}
-                                                        <option value="{$paginator->itemCount}" {$paginator->itemsPerPage == $paginator->itemCount ? selected} data-link="{$control->link('reload!', ['itemsPerPage' => $paginator->itemCount])}">{$allOptionTitle}</option>
-                                                    {/ifset}
-                                                {/last}
-                                            </select>
-                                            <small class="text-muted float-right">(Items: {$paginator->page * $paginator->length - $paginator->length + 1} - {$paginator->page * $paginator->length} from {$paginator->itemCount})</small>
-                                        {/ifset}
-                                    </div>
-                                </div>
-                            </th>
-                        </tr>
-                    {/ifset}
-                </tfoot>
+                                </th>
+                            </tr>
+                        {/ifset}
+                    {$tfootTemplate->renderEndTag()|noescape}
+                {/if}
             {include #table-close-tag colspan => $colspan}
 
         {/form}

@@ -4,8 +4,35 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c95d396415d76a5f17f83445cb8b580",
+    "content-hash": "6bb2fecebca35b1af5cfefabb2226730",
     "packages": [
+        {
+            "name": "e2221/html-element",
+            "version": "v1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/e2221/html-element.git",
+                "reference": "c62aa5b3dec740936c1b824678b3239a0167f6e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/e2221/html-element/zipball/c62aa5b3dec740936c1b824678b3239a0167f6e2",
+                "reference": "c62aa5b3dec740936c1b824678b3239a0167f6e2",
+                "shasum": ""
+            },
+            "require": {
+                "nette/utils": "^3.1"
+            },
+            "type": "libraly",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Base class for HTML elements",
+            "time": "2020-07-14T11:09:27+00:00"
+        },
         {
             "name": "latte/latte",
             "version": "v2.8.1",
@@ -228,16 +255,16 @@
         },
         {
             "name": "nette/forms",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/forms.git",
-                "reference": "ec3633f01989c1ab42bd6502f76035ae5bf8c0c0"
+                "reference": "ecb5f7b8c82585c5fc4698ccb6815542fe6b2db4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/forms/zipball/ec3633f01989c1ab42bd6502f76035ae5bf8c0c0",
-                "reference": "ec3633f01989c1ab42bd6502f76035ae5bf8c0c0",
+                "url": "https://api.github.com/repos/nette/forms/zipball/ecb5f7b8c82585c5fc4698ccb6815542fe6b2db4",
+                "reference": "ecb5f7b8c82585c5fc4698ccb6815542fe6b2db4",
                 "shasum": ""
             },
             "require": {
@@ -294,7 +321,7 @@
                 "nette",
                 "validation"
             ],
-            "time": "2020-06-06T13:38:25+00:00"
+            "time": "2020-07-13T12:29:50+00:00"
         },
         {
             "name": "nette/http",
