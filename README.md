@@ -24,8 +24,8 @@ Requirements
  
 Install
 -
-composer require e2221/datagrid
+`composer require e2221/datagrid`
 
-Documentation
+<br>
 -
-<a href="https://github.com/e2221/Datagrid/wiki">Documentation</a>
+- <a href="https://github.com/e2221/Datagrid/wiki">Documentation</a>

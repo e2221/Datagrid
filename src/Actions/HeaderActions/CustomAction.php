@@ -17,5 +17,4 @@ class CustomAction extends Action
         $a->href($this->link);
         return $a;
     }
-
 }

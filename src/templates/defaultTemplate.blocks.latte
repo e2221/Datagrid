@@ -285,6 +285,13 @@ BLOCKS ADDED
     {foreach $customActions as $actionName => $action}
         {$action->render()}
     {/foreach}
+
+    {php
+        $export = $headActionsColumnTemplate->getExportAction();
+    }
+    {if $export}
+        {$export->render()}
+    {/if}
 {/define}
 
 {* row item detail - tr

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid;
 
+use e2221\Datagrid\Actions\Export\ExportAction;
 use e2221\Datagrid\Actions\HeaderActions\CustomAction;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
 use e2221\Datagrid\Actions\RowActions\RowCustomAction;
@@ -26,6 +27,7 @@ use e2221\Datagrid\Document\TheadTemplate;
 use e2221\Datagrid\Document\TitleColumnTemplate;
 use e2221\Datagrid\Document\TitleRowTemplate;
 use e2221\Datagrid\Document\TitleTemplate;
+use e2221\Datagrid\Export\CsvExport;
 use Exception;
 use Nette\Application\AbortException;
 use Nette\Application\UI;
@@ -75,11 +77,25 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var callable */
     protected $multipleFilterFormFactory;
 
+    /** @var string Export file name */
+    public string $exportFileName='export.csv';
+
 
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
         $this->documentTemplate = new DocumentTemplate($this);
+    }
+
+    /**
+     * Sets export file name
+     * @param string $exportFileName
+     * @return Datagrid
+     */
+    public function setExportFileName(string $exportFileName): Datagrid
+    {
+        $this->exportFileName = $exportFileName;
+        return $this;
     }
 
     /**
@@ -105,7 +121,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         return $this->documentTemplate;
     }
-
 
     /**
      * Generates universal Form Container
@@ -144,7 +159,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         return $container;
     }
 
-
     /**
      * Get cells templates
      * load parent getCellsTemplates() and add defaultTemplate.blocks.latte
@@ -155,7 +169,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->addCellsTemplate(__DIR__ . '/templates/defaultTemplate.blocks.latte');
         return parent::getCellsTemplates();
     }
-
 
     /**
      * Get filterable columns
@@ -281,7 +294,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         }
     }
 
-
     /**
      * Adds column
      * @param $name
@@ -310,6 +322,20 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * Adds head-export action
+     * @param string $title
+     * @param string $exportFileName
+     * @return ExportAction
+     */
+    public function addExportAction(string $title='Export', string $exportFileName='export.csv'): ExportAction
+    {
+        $this->exportFileName = $exportFileName;
+        return $this->documentTemplate->getHeadRowTemplate()
+            ->getColumnActionsHeadTemplate()
+            ->setExportAction($this, '_export', $title);
+    }
+
+    /**
      * Adds row custom action
      * @param $name
      * @param null $title
@@ -320,7 +346,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $title = $title ? $this->translate($title) : ucfirst($name);
         return $this->rowCustomActions[$name] = new RowCustomAction($name, $title);
     }
-
 
     /**
      * Set pagination
@@ -338,13 +363,23 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         return $this;
     }
 
-
     /**
      * Signal to reload all grid
      */
     public function handleReload(): void
     {
         $this->redrawControl('rows');
+    }
+
+    /**
+     * Signal to create export of data
+     * @throws AbortException
+     * @throws Exception
+     */
+    public function handleExport(): void
+    {
+        $this->exportData();
+
     }
 
     /**
@@ -363,7 +398,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         //generate multiple filter form factory
         $this->generateMultipleFilterFormFactory();
     }
-
 
     /**
      * Render
@@ -436,6 +470,31 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
         $this->onRender($this);
         $this->template->render();
+    }
+
+    /**
+     * Export data
+     * @throws AbortException
+     * @throws Exception
+     */
+    private function exportData(): void
+    {
+        $data = [];
+        foreach($this->columns as $columnName => $column)
+            $data[0][] = $column->label;
+        foreach($this->getData() as $rowID => $row)
+        {
+            $row = $row->toArray();
+            foreach($row as $columnName => $column)
+            {
+                if(!array_key_exists($columnName, $this->columns))
+                    unset($row[$columnName]);
+            }
+            $data[] = $row;
+        }
+
+        $export = new CsvExport($data, $this->exportFileName, 'utf-8', ';', true);
+        $this->getPresenter()->sendResponse($export);
     }
 
     /**
@@ -614,8 +673,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         return $value === NULL || $value === '' || $value === [] || $value === false;
     }
-
-
 }
 
 

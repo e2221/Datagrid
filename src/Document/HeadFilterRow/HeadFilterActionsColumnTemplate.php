@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid\Document;
 
+use e2221\Datagrid\Actions\Export\ExportAction;
 use e2221\Datagrid\Actions\FilterActions\CancelFilterAction;
 use e2221\Datagrid\Actions\FilterActions\FilterAction;
+use e2221\Datagrid\Datagrid;
 use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
 
