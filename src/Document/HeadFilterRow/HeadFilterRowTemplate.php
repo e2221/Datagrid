@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\HeadFilterRow;
 
 use e2221\HtmElement\BaseElement;
 

@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\ItemDetailRow;
 
+use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
 
-class ItemDetailRow extends \e2221\HtmElement\BaseElement
+class ItemDetailRow extends BaseElement
 {
     protected ItemDetailColumn $itemDetailColumn;
 
-    public ?string $class = 'collapse';
+    public string $class = 'collapse';
 
     /** @var callable|null */
     protected $setAttributesCallback;

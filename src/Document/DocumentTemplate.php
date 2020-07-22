@@ -4,6 +4,11 @@ declare(strict_types=1);
 namespace e2221\Datagrid\Document;
 
 use e2221\Datagrid\Datagrid;
+use e2221\Datagrid\Document\DataRow\DataRowTemplate;
+use e2221\Datagrid\Document\HeadFilterRow\HeadFilterRowTemplate;
+use e2221\Datagrid\Document\HeadRow\HeadRowTemplate;
+use e2221\Datagrid\Document\ItemDetailRow\ItemDetailRow;
+use e2221\Datagrid\Document\TitleRow\TitleRowTemplate;
 
 class DocumentTemplate
 {

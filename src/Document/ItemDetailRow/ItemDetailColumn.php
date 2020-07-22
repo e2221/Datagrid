@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\ItemDetailRow;
 
+use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
 
-class ItemDetailColumn extends \e2221\HtmElement\BaseElement
+class ItemDetailColumn extends BaseElement
 {
 
     /** @var callable|null */

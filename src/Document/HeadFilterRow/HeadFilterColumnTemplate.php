@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\HeadFilterRow;
 
 use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
@@ -10,7 +10,7 @@ class HeadFilterColumnTemplate extends BaseElement
 {
     protected ?string $elName = 'th';
 
-    public ?string $class = '';
+    public string $class = '';
 
     /** @var bool set column as sticky top */
     public bool $stickyTop = false;
@@ -21,9 +21,9 @@ class HeadFilterColumnTemplate extends BaseElement
     /**
      * Set attributes callback
      * @param callable $callback
-     * @return $this
+     * @return HeadFilterColumnTemplate
      */
-    public function setAttributesCallback(callable $callback): HeadColumnTemplate
+    public function setAttributesCallback(callable $callback): HeadFilterColumnTemplate
     {
         $this->attributesCallback = $callback;
         return $this;
@@ -60,9 +60,9 @@ class HeadFilterColumnTemplate extends BaseElement
     /**
      * Sets column sticky top
      * @param bool $sticky
-     * @return $this
+     * @return HeadFilterColumnTemplate
      */
-    public function setStickyTop(bool $sticky=true): HeadColumnTemplate
+    public function setStickyTop(bool $sticky=true): HeadFilterColumnTemplate
     {
         $this->stickyTop = $sticky;
         return $this;

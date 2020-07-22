@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\TitleRow;
 
 
-class TitleRowTemplate extends \e2221\HtmElement\BaseElement
+use e2221\HtmElement\BaseElement;
+
+class TitleRowTemplate extends BaseElement
 {
     protected MultipleFilterTemplate $multipleFilterTemplate;
     protected ?TitleTemplate $titleTemplate=null;

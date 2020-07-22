@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
-
+namespace e2221\Datagrid\Document\DataRow;
 
 use e2221\Datagrid\Actions\RowActions\RowActionCancel;
 use e2221\Datagrid\Actions\RowActions\RowActionEdit;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
 use e2221\Datagrid\Actions\RowActions\RowActionSave;
 use e2221\Datagrid\Datagrid;
+use e2221\HtmElement\BaseElement;
 
-class DataActionsColumnTemplate extends \e2221\HtmElement\BaseElement
+class DataActionsColumnTemplate extends BaseElement
 {
     protected ?string $elName = 'td';
     public array $attributes = ['class' => 'grid-col-actions'];

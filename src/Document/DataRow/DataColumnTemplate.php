@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\DataRow;
 
+use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
 
-class DataColumnTemplate extends \e2221\HtmElement\BaseElement
+class DataColumnTemplate extends BaseElement
 {
     protected ?string $elName = 'td';
 

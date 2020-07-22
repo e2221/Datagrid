@@ -1,13 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\TitleRow;
 
 
-class TitleTemplate extends \e2221\HtmElement\BaseElement
+use e2221\HtmElement\BaseElement;
+
+class TitleTemplate extends BaseElement
 {
     protected ?string $elName = 'div';
 
-    public ?string $class = 'col col-6';
+    public string $class = 'col col-6';
 
 }

@@ -1,12 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\HeadFilterRow;
 
-use e2221\Datagrid\Actions\Export\ExportAction;
 use e2221\Datagrid\Actions\FilterActions\CancelFilterAction;
 use e2221\Datagrid\Actions\FilterActions\FilterAction;
-use e2221\Datagrid\Datagrid;
 use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
 
@@ -14,7 +12,7 @@ class HeadFilterActionsColumnTemplate extends BaseElement
 {
     protected ?string $elName = 'th';
 
-    public ?string $class = '';
+    public string $class = '';
 
     public array $attributes = ['class' => 'grid-col-actions'];
 

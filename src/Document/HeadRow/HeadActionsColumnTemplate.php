@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\HeadRow;
 
 use e2221\Datagrid\Actions\Export\ExportAction;
 use e2221\Datagrid\Datagrid;
@@ -12,7 +12,7 @@ class HeadActionsColumnTemplate extends BaseElement
 {
     protected ?string $elName = 'th';
 
-    public ?string $class = '';
+    public string $class = '';
 
     public array $attributes = ['class' => 'grid-col-actions'];
 

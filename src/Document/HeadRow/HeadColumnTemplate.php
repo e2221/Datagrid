@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace e2221\Datagrid\Document;
+namespace e2221\Datagrid\Document\HeadRow;
 
 use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
@@ -10,7 +10,7 @@ class HeadColumnTemplate extends BaseElement
 {
     protected ?string $elName = 'th';
 
-    public ?string $class = '';
+    public string $class = '';
 
     /** @var bool set column as sticky top */
     public bool $stickyTop = false;
