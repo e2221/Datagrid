@@ -620,8 +620,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 {
                     $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
                 }
-                $form->addSubmit('filter', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
-                $form->addSubmit('cancel', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
+                $form->addSubmit('filter', 'Filter');
+                $form->addSubmit('cancel', 'Cancel');
                 return $form;
             });
         }
@@ -659,8 +659,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 {
                     $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
                 }
-                $form->addSubmit('filterMultiple', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
-                $form->addSubmit('cancelMultiple', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
+                $form->addSubmit('filterMultiple', 'Filter');
+                $form->addSubmit('cancelMultiple', 'Cancel');
                 return $form;
             };
         }
