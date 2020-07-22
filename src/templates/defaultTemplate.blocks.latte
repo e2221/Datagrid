@@ -237,7 +237,7 @@
 *}
 {define row-actions-generated}
     {if !is_null($dataActionsColumnTemplate->getRowActionItemDetail())}
-        {$dataActionsColumnTemplate->render($row, $primary, $this->global->snippetDriver->getHtmlId("itemDetail-$primary"))}
+        {$dataActionsColumnTemplate->getRowActionItemDetail()->render($row, $primary, $this->global->snippetDriver->getHtmlId("itemDetail-$primary"))}
     {/if}
 
     {if $control->getEditFormFactory()}

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid\Actions\RowActions;
 
+use e2221\HtmElement\BaseElement;
 use Nette\Utils\Html;
 
 class RowActionItemDetail extends RowAction
@@ -33,8 +34,6 @@ class RowActionItemDetail extends RowAction
         return $this;
     }
 
-
-
     public function render($row, $primary, ?string $itemDetailId=null): ?Html
     {
         $button = parent::render($row, $primary);
@@ -51,9 +50,9 @@ class RowActionItemDetail extends RowAction
 
     /**
      * Content renderer
-     * @return Html|null
+     * @return Html|null|BaseElement|string
      */
-    public function renderContent(): ?Html
+    public function renderContent()
     {
         if(is_callable($this->contentCallback))
         {

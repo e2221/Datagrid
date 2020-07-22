@@ -8,6 +8,7 @@ use Nette\Utils\Html;
 
 class ItemDetailColumn extends BaseElement
 {
+    protected ?string $elName = 'td';
 
     /** @var callable|null */
     protected $setAttributesCallback;

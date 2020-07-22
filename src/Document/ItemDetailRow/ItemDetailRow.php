@@ -10,7 +10,9 @@ class ItemDetailRow extends BaseElement
 {
     protected ItemDetailColumn $itemDetailColumn;
 
-    public string $class = 'collapse';
+    protected ?string $elName = 'tr';
+
+    public string $class = 'collapse border bg-light';
 
     /** @var callable|null */
     protected $setAttributesCallback;
