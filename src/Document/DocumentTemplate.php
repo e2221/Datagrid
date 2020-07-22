@@ -31,7 +31,7 @@ class DocumentTemplate
     /** @var bool Sets table borderless */
     public bool $borderless = false;
 
-    /** TODO @var bool Hides table header */
+    /** @var bool Hides table header */
     public bool $hideTableHeader = false;
 
     /** @var TheadTemplate template to style <thead> tag */
@@ -73,7 +73,14 @@ class DocumentTemplate
         $this->itemDetailRow = new ItemDetailRow();
     }
 
+    /**************************************************************************
+     *
+     * Template getters
+     *
+     ***************************************************************************/
+
     /**
+     * Get thead template <thead>
      * @return TheadTemplate
      */
     public function getTheadTemplate(): TheadTemplate
@@ -82,6 +89,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get tbody template <tbody>
      * @return TbodyTemplate
      */
     public function getTbodyTemplate(): TbodyTemplate
@@ -90,6 +98,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get tfoot template <tfoot>
      * @return TfootTemplate
      */
     public function getTfootTemplate(): TfootTemplate
@@ -98,6 +107,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get Title Row template <tr>
      * @return TitleRowTemplate
      */
     public function getTitleRowTemplate(): TitleRowTemplate
@@ -106,6 +116,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get Head row template <tr>
      * @return HeadRowTemplate
      */
     public function getHeadRowTemplate(): HeadRowTemplate
@@ -114,6 +125,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get Head Filter Row template <tr>
      * @return HeadFilterRowTemplate
      */
     public function getHeadFilterRowTemplate(): HeadFilterRowTemplate
@@ -122,6 +134,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get Data-row template <tr>
      * @return DataRowTemplate
      */
     public function getDataRowTemplate(): DataRowTemplate
@@ -130,6 +143,7 @@ class DocumentTemplate
     }
 
     /**
+     * Get ItemDetail-row template <tr>
      * @return ItemDetailRow
      */
     public function getItemDetailRow(): ItemDetailRow
@@ -137,10 +151,11 @@ class DocumentTemplate
         return $this->itemDetailRow;
     }
 
-    /**
-     * Table document
-     * ****************************************************************
-     */
+    /**************************************************************************
+     *
+     * Style <table> tag
+     *
+     ***************************************************************************/
 
     /**
      * Set class that will be added

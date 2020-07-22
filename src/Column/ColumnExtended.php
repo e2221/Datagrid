@@ -8,8 +8,6 @@ use Nextras\Datagrid\Column;
 
 class ColumnExtended extends Column
 {
-    const SUPPORTED_HTML_TYPES = ['text', 'number', 'password', 'select', 'textarea'];
-
     /** @var bool Is column filterable */
     protected bool $filterable = FALSE;
 
@@ -53,11 +51,11 @@ class ColumnExtended extends Column
     protected $cellValueCallback = null;
 
 
-
-    /*
+    /**************************************************************************
+     *
      * Render settings
-     * *************************************************************************
-     */
+     *
+     ***************************************************************************/
 
     /**
      * @param callable|null $htmlCallback
@@ -89,6 +87,11 @@ class ColumnExtended extends Column
         return $this;
     }
 
+    /**************************************************************************
+     *
+     * Render
+     *
+     ***************************************************************************/
 
     /**
      * Render Column
@@ -114,12 +117,11 @@ class ColumnExtended extends Column
         return $html;
     }
 
-
-
-    /*
+    /**************************************************************************
+     *
      * Col global settings
-     * *********************************************************************
-     */
+     *
+     ***************************************************************************/
 
     /**
      * Sets column filterable
@@ -181,7 +183,6 @@ class ColumnExtended extends Column
         $this->filterMultipleHtmlDecorations = $filterMultipleHtmlDecorations;
         return $this;
     }
-
 
     /**
      * Sets column editable
@@ -266,7 +267,6 @@ class ColumnExtended extends Column
     {
         $this->hidden = $hidden;
     }
-
 
     /**
      * @return bool

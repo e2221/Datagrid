@@ -4,20 +4,82 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bb2fecebca35b1af5cfefabb2226730",
+    "content-hash": "aeeb79928027de3ae1cd1e548413d4dd",
     "packages": [
         {
-            "name": "e2221/html-element",
-            "version": "v1.6",
+            "name": "contributte/application",
+            "version": "v0.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/e2221/html-element.git",
-                "reference": "c62aa5b3dec740936c1b824678b3239a0167f6e2"
+                "url": "https://github.com/contributte/application.git",
+                "reference": "401975416fbc87b13acc66d17882c5941b3e303b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/e2221/html-element/zipball/c62aa5b3dec740936c1b824678b3239a0167f6e2",
-                "reference": "c62aa5b3dec740936c1b824678b3239a0167f6e2",
+                "url": "https://api.github.com/repos/contributte/application/zipball/401975416fbc87b13acc66d17882c5941b3e303b",
+                "reference": "401975416fbc87b13acc66d17882c5941b3e303b",
+                "shasum": ""
+            },
+            "require": {
+                "nette/application": "^3.0.0",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "nette/http": "~2.4.8 || ~3.0.0",
+                "ninjify/nunjuck": "^0.2.0",
+                "ninjify/qa": "^0.9.0",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan-deprecation-rules": "^0.11.0",
+                "phpstan/phpstan-nette": "^0.11.1",
+                "phpstan/phpstan-shim": "^0.11.2",
+                "phpstan/phpstan-strict-rules": "^0.11.0",
+                "psr/http-message": "~1.0.1",
+                "tracy/tracy": "~2.6.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Contributte\\Application\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milan Felix Šulc",
+                    "homepage": "https://f3l1x.io"
+                }
+            ],
+            "description": "Extra contrib to nette/application",
+            "homepage": "https://github.com/contributte/application",
+            "keywords": [
+                "application",
+                "component",
+                "control",
+                "nette",
+                "presenter"
+            ],
+            "time": "2020-04-01T17:34:21+00:00"
+        },
+        {
+            "name": "e2221/html-element",
+            "version": "v1.7-beta.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/e2221/html-element.git",
+                "reference": "d5f273de4b2d82703a22bf9bb4a09b2742bebbb3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/e2221/html-element/zipball/d5f273de4b2d82703a22bf9bb4a09b2742bebbb3",
+                "reference": "d5f273de4b2d82703a22bf9bb4a09b2742bebbb3",
                 "shasum": ""
             },
             "require": {
@@ -31,7 +93,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "Base class for HTML elements",
-            "time": "2020-07-14T11:09:27+00:00"
+            "time": "2020-07-21T07:09:12+00:00"
         },
         {
             "name": "latte/latte",
@@ -629,7 +691,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "e2221/html-element": 10
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

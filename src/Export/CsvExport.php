@@ -7,5 +7,4 @@ use Contributte\Application\Response\CSVResponse;
 
 class CsvExport extends CSVResponse
 {
-
 }

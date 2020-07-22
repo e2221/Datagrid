@@ -88,7 +88,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Sets export file name
+     * Set csv export file name
      * @param string $exportFileName
      * @return Datagrid
      */
@@ -96,6 +96,86 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         $this->exportFileName = $exportFileName;
         return $this;
+    }
+
+    /**************************************************************************
+     *
+     * Get document templates which includes all document templates
+     *
+     ***************************************************************************/
+
+    /**
+     * Get document template to style
+     * @return DocumentTemplate
+     */
+    public function getDocumentTemplate(): DocumentTemplate
+    {
+        return $this->documentTemplate;
+    }
+
+    /**************************************************************************
+     *
+     * Add column
+     *
+     ***************************************************************************/
+
+    /**
+     * Add column
+     * @param $name
+     * @param null $label
+     * @return ColumnExtended
+     */
+    public function addColumn($name, $label = null): ColumnExtended
+    {
+        if (!$this->rowPrimaryKey) {
+            $this->rowPrimaryKey = $name;
+        }
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnExtended($name, $label, $this);
+    }
+
+    /**************************************************************************
+     *
+     * Add Head and Data-Row Actions
+     *
+     ***************************************************************************/
+
+    /**
+     * Adds head custom action
+     * @param $name
+     * @param null $title
+     * @return CustomAction
+     */
+    public function addCustomAction($name, $title = null): CustomAction
+    {
+        $title = $title ? $this->translate($title) : ucfirst($name);
+        return $this->customActions[$name] = new CustomAction($name, $title);
+    }
+
+    /**
+     * Add head-export action
+     * @param string $title
+     * @param string $exportFileName
+     * @return ExportAction
+     */
+    public function addExportAction(string $title='Export', string $exportFileName='export.csv'): ExportAction
+    {
+        $this->exportFileName = $exportFileName;
+        return $this->documentTemplate->getHeadRowTemplate()
+            ->getColumnActionsHeadTemplate()
+            ->setExportAction($this, '_export', $title);
+    }
+
+    /**
+     * Add data-row custom action
+     * @param $name
+     * @param null $title
+     * @return RowCustomAction
+     */
+    public function addRowCustomAction($name, $title = null): RowCustomAction
+    {
+        $title = $title ? $this->translate($title) : ucfirst($name);
+        return $this->rowCustomActions[$name] = new RowCustomAction($name, $title);
     }
 
     /**
@@ -112,53 +192,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             ->setRowActionItemDetail($name, $title);
     }
 
-
-    /**
-     * Get document template to style
-     * @return DocumentTemplate
-     */
-    public function getDocumentTemplate(): DocumentTemplate
-    {
-        return $this->documentTemplate;
-    }
-
-    /**
-     * Generates universal Form Container
-     * @param Container $container
-     * @param string $name
-     * @param string $caption
-     * @param string $html
-     * @param bool $required
-     * @param array $selection
-     * @param array $htmlDecorations
-     * @return Container
-     */
-    private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null, array $htmlDecorations=[]): Container
-    {
-        switch ($html){
-            case 'select':
-                $container->addSelect($name, $caption, $selection);
-                break;
-            case 'textarea':
-                $container->addTextArea($name, $caption);
-                break;
-            default:
-                $addMethod = 'add' . $html;
-                if(!method_exists($this, $addMethod))
-                    $addMethod = 'addText';
-                $container->$addMethod($name, $caption);
-                break;
-        }
-        foreach ($this->defaultInputAttributes as $attribute => $value) {
-            $container[$name]->setHtmlAttribute($attribute, $value);
-        }
-        foreach ($htmlDecorations as $tag => $value)
-            $container[$name]->setHtmlAttribute($tag, $value);
-        if($required)
-            $container[$name]->setRequired();
-        return $container;
-    }
-
     /**
      * Get cells templates
      * load parent getCellsTemplates() and add defaultTemplate.blocks.latte
@@ -170,189 +203,18 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         return parent::getCellsTemplates();
     }
 
-    /**
-     * Get filterable columns
-     * @return array
-     * @internal
-     */
-    private function getFilterableColumns(): array
-    {
-        $filterableColumns = [];
-        foreach ($this->columns as $columnName => $column)
-        {
-            if($column->isFilterable())
-            {
-                $filterableColumns[$columnName] = $column;
-                $this->isFilterable = TRUE;
-            }
-        }
-        return $filterableColumns;
-    }
-
-    /**
-     * Filter-form factory generator
-     * @internal
-     */
-    private function generateFilterFormFactory(): void
-    {
-        $filterableColumns = $this->getFilterableColumns();
-        if(count($filterableColumns) > 0)
-        {
-            $this->setFilterFormFactory(function () use ($filterableColumns) {
-                $form = new Container();
-                foreach($filterableColumns as $name => $column)
-                {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
-                }
-                $form->addSubmit('filter', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
-                $form->addSubmit('cancel', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
-                return $form;
-            });
-        }
-    }
-
-    /**
-     * Get multiple filterable columns
-     * @return array
-     */
-    private function getMultipleFilterableColumns(): array
-    {
-        $multipleFColumns = [];
-        foreach ($this->columns as $columnName => $column)
-        {
-            if($column->isMultipleFilterable())
-            {
-                $multipleFColumns[$columnName] = $column;
-                $this->isMultipleFilterable = TRUE;
-            }
-        }
-        return $multipleFColumns;
-    }
-
-    /**
-     * Generate multiple filter form factory
-     */
-    private function generateMultipleFilterFormFactory(): void
-    {
-        $multipleColumns = $this->getMultipleFilterableColumns();
-        if(count($multipleColumns) > 0)
-        {
-            $this->multipleFilterFormFactory = function () use ($multipleColumns) {
-                $form = new Container();
-                foreach($multipleColumns as $name => $column)
-                {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
-                }
-                $form->addSubmit('filterMultiple', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
-                $form->addSubmit('cancelMultiple', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
-                return $form;
-            };
-        }
-    }
-
-    /**
-     * Get editable columns
-     * @return array
-     * @internal
-     */
-    private function getEditableColumns(): array
-    {
-        $editableColumns = [];
-        foreach ($this->columns as $columnName => $column)
-        {
-            if($column->isEditable())
-            {
-                $editableColumns[$columnName] = $column;
-                $this->isEditable = TRUE;
-            }
-        }
-        return $editableColumns;
-    }
-
-    /**
-     * Generate edit-form factory
-     * @internal
-     */
-    private function generateEditFormFactory(): void
-    {
-        $editableColumns = $this->getEditableColumns();
-        if(count($editableColumns) > 0)
-        {
-            $this->setEditFormFactory(function ($row) use ($editableColumns){
-                $form = new Container();
-                foreach($editableColumns as $name => $column)
-                {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
-                }
-                $form->addSubmit('save', 'Save');
-                $form->addSubmit('cancel', 'Cancel');
-                if ($row) {
-                    $form->setDefaults($row);
-                }
-                return $form;
-            });
-        }
-    }
-
-    /**
-     * Adds column
-     * @param $name
-     * @param null $label
-     * @return ColumnExtended
-     */
-    public function addColumn($name, $label = null): ColumnExtended
-    {
-        if (!$this->rowPrimaryKey) {
-            $this->rowPrimaryKey = $name;
-        }
-        $label = $label ? $this->translate($label) : ucfirst($name);
-        return $this->columns[$name] = new ColumnExtended($name, $label, $this);
-    }
-
-    /**
-     * Adds head action
-     * @param $name
-     * @param null $title
-     * @return CustomAction
-     */
-    public function addCustomAction($name, $title = null): CustomAction
-    {
-        $title = $title ? $this->translate($title) : ucfirst($name);
-        return $this->customActions[$name] = new CustomAction($name, $title);
-    }
-
-    /**
-     * Adds head-export action
-     * @param string $title
-     * @param string $exportFileName
-     * @return ExportAction
-     */
-    public function addExportAction(string $title='Export', string $exportFileName='export.csv'): ExportAction
-    {
-        $this->exportFileName = $exportFileName;
-        return $this->documentTemplate->getHeadRowTemplate()
-            ->getColumnActionsHeadTemplate()
-            ->setExportAction($this, '_export', $title);
-    }
-
-    /**
-     * Adds row custom action
-     * @param $name
-     * @param null $title
-     * @return RowCustomAction
-     */
-    public function addRowCustomAction($name, $title = null): RowCustomAction
-    {
-        $title = $title ? $this->translate($title) : ucfirst($name);
-        return $this->rowCustomActions[$name] = new RowCustomAction($name, $title);
-    }
+    /**************************************************************************
+     *
+     * Pagination settings
+     *
+     ***************************************************************************/
 
     /**
      * Set pagination
      * @param $itemsPerPage
      * @param callable|null $itemsCountCallback
-     * @param array|null $itemsCountList
-     * @param string|null $allOptionTitle
+     * @param array|null $itemsCountList list of possible items per page (ex. [10, 20, 50]
+     * @param string|null $allOptionTitle title of option to select all without pagination
      * @return Datagrid
      */
     public function setPagination($itemsPerPage, callable $itemsCountCallback = null, ?array $itemsCountList = null, ?string $allOptionTitle = null): Datagrid
@@ -362,6 +224,12 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->allOptionTitle = $allOptionTitle;
         return $this;
     }
+
+    /**************************************************************************
+     *
+     * Signals
+     *
+     ***************************************************************************/
 
     /**
      * Signal to reload all grid
@@ -379,30 +247,32 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function handleExport(): void
     {
         $this->exportData();
-
     }
 
-    /**
+    /**************************************************************************
+     *
+     * Load state
+     * Generate Filter, Edit, MultipleFilter form factories
+     *
+     **************************************************************************
      * @param array $params
      */
     public function loadState(array $params): void
     {
         parent::loadState($params);
-
         //generate filter form factory
         $this->generateFilterFormFactory();
-
         //generate edit form factory
         $this->generateEditFormFactory();
-
         //generate multiple filter form factory
         $this->generateMultipleFilterFormFactory();
     }
 
-    /**
-     * Render
-     * @throws Exception
-     */
+    /**************************************************************************
+     *
+     * Renderer
+     *
+     ***************************************************************************/
     public function render(): void
     {
         if ($this->filterFormFactory) {
@@ -473,7 +343,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Export data
+     * Export data to CSV
      * @throws AbortException
      * @throws Exception
      */
@@ -498,7 +368,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Show cacnecl filter button?
+     * Show cancel filter button?
      * @return bool
      */
     private function showCancelFilterButton(): bool
@@ -510,7 +380,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Rewrited createComponentForm => filterMultiple added
+     * Rewrites createComponentForm => filterMultiple added
      * @return UI\Form
      */
     public function createComponentForm()
@@ -542,7 +412,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Rewrite processForm to implemetn filter multiple
+     * Rewrite processForm to implement filter multiple
      * @param UI\Form $form
      * @throws AbortException
      */
@@ -673,12 +543,177 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         return $value === NULL || $value === '' || $value === [] || $value === false;
     }
+
+    /**************************************************************************
+     *
+     * Container generator
+     * Getters for Filterable, MultipleFilterable, Editable Columns
+     *
+     ***************************************************************************/
+
+    /**
+     * Generates universal Form Container
+     * @param Container $container
+     * @param string $name
+     * @param string $caption
+     * @param string $html
+     * @param bool $required
+     * @param array $selection
+     * @param array $htmlDecorations
+     * @return Container
+     */
+    private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null, array $htmlDecorations=[]): Container
+    {
+        switch ($html){
+            case 'select':
+                $container->addSelect($name, $caption, $selection);
+                break;
+            case 'textarea':
+                $container->addTextArea($name, $caption);
+                break;
+            default:
+                $addMethod = 'add' . $html;
+                if(!method_exists($this, $addMethod))
+                    $addMethod = 'addText';
+                $container->$addMethod($name, $caption);
+                break;
+        }
+        foreach ($this->defaultInputAttributes as $attribute => $value) {
+            $container[$name]->setHtmlAttribute($attribute, $value);
+        }
+        foreach ($htmlDecorations as $tag => $value)
+            $container[$name]->setHtmlAttribute($tag, $value);
+        if($required)
+            $container[$name]->setRequired();
+        return $container;
+    }
+
+    /**
+     * Get filterable columns
+     * @return array
+     */
+    private function getFilterableColumns(): array
+    {
+        $filterableColumns = [];
+        foreach ($this->columns as $columnName => $column)
+        {
+            if($column->isFilterable())
+            {
+                $filterableColumns[$columnName] = $column;
+                $this->isFilterable = TRUE;
+            }
+        }
+        return $filterableColumns;
+    }
+
+    /**
+     * Filter-form factory generator
+     */
+    private function generateFilterFormFactory(): void
+    {
+        $filterableColumns = $this->getFilterableColumns();
+        if(count($filterableColumns) > 0)
+        {
+            $this->setFilterFormFactory(function () use ($filterableColumns) {
+                $form = new Container();
+                foreach($filterableColumns as $name => $column)
+                {
+                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
+                }
+                $form->addSubmit('filter', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
+                $form->addSubmit('cancel', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
+                return $form;
+            });
+        }
+    }
+
+    /**
+     * Get multiple filterable columns
+     * @return array
+     */
+    private function getMultipleFilterableColumns(): array
+    {
+        $multipleFColumns = [];
+        foreach ($this->columns as $columnName => $column)
+        {
+            if($column->isMultipleFilterable())
+            {
+                $multipleFColumns[$columnName] = $column;
+                $this->isMultipleFilterable = TRUE;
+            }
+        }
+        return $multipleFColumns;
+    }
+
+    /**
+     * Generate multiple filter form factory
+     */
+    private function generateMultipleFilterFormFactory(): void
+    {
+        $multipleColumns = $this->getMultipleFilterableColumns();
+        if(count($multipleColumns) > 0)
+        {
+            $this->multipleFilterFormFactory = function () use ($multipleColumns) {
+                $form = new Container();
+                foreach($multipleColumns as $name => $column)
+                {
+                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
+                }
+                $form->addSubmit('filterMultiple', 'Filter')->getControlPrototype()->class = 'btn btn-sm btn-outline-primary';
+                $form->addSubmit('cancelMultiple', 'Cancel')->getControlPrototype()->class = 'btn btn-sm btn-outline-secondary';
+                return $form;
+            };
+        }
+    }
+
+    /**
+     * Get editable columns
+     * @return array
+     */
+    private function getEditableColumns(): array
+    {
+        $editableColumns = [];
+        foreach ($this->columns as $columnName => $column)
+        {
+            if($column->isEditable())
+            {
+                $editableColumns[$columnName] = $column;
+                $this->isEditable = TRUE;
+            }
+        }
+        return $editableColumns;
+    }
+
+    /**
+     * Generate edit-form factory
+     */
+    private function generateEditFormFactory(): void
+    {
+        $editableColumns = $this->getEditableColumns();
+        if(count($editableColumns) > 0)
+        {
+            $this->setEditFormFactory(function ($row) use ($editableColumns){
+                $form = new Container();
+                foreach($editableColumns as $name => $column)
+                {
+                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
+                }
+                $form->addSubmit('save', 'Save');
+                $form->addSubmit('cancel', 'Cancel');
+                if ($row) {
+                    $form->setDefaults($row);
+                }
+                return $form;
+            });
+        }
+    }
 }
 
-
-/**
- * Class DatagridTemplate
- */
+/**************************************************************************
+ *
+ * Template
+ *
+***************************************************************************/
 class DatagridTemplate extends Template
 {
     public IComponent $form;
