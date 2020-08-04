@@ -115,7 +115,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /**************************************************************************
      *
-     * Add column
+     * Add-get column
      *
      ***************************************************************************/
 
@@ -132,6 +132,19 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         }
         $label = $label ? $this->translate($label) : ucfirst($name);
         return $this->columns[$name] = new ColumnExtended($name, $label, $this);
+    }
+
+    /**
+     * Get column
+     * @param  string $name
+     * @return ColumnExtended
+     */
+    public function getColumn($name)
+    {
+        if (!isset($this->columns[$name])) {
+            throw new \InvalidArgumentException("Unknown column $name.");
+        }
+        return $this->columns[$name];
     }
 
     /**************************************************************************
