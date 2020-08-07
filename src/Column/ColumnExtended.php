@@ -50,6 +50,9 @@ class ColumnExtended extends Column
     /** @var callable|null Set custom column value callback */
     protected $cellValueCallback = null;
 
+    /** @var callable|null Set value in edit form (makes sense if column is set as editable) */
+    protected $editValueCallback = null;
+
 
     /**************************************************************************
      *
@@ -84,6 +87,16 @@ class ColumnExtended extends Column
     public function setCellValueCallback(?callable $cellValueCallback): ColumnExtended
     {
         $this->cellValueCallback = $cellValueCallback;
+        return $this;
+    }
+
+    /**
+     * @param callable|null $editValueCallback
+     * @return $this
+     */
+    public function setEditValueCallback(?callable $editValueCallback): ColumnExtended
+    {
+        $this->editValueCallback = $editValueCallback;
         return $this;
     }
 
@@ -322,5 +335,22 @@ class ColumnExtended extends Column
     public function getFilterMultipleHtmlDecorations(): array
     {
         return $this->filterMultipleHtmlDecorations;
+    }
+
+    /**
+     * @param $row
+     * @return mixed
+     * @internal
+     */
+    public function getEditValue($row)
+    {
+        if(is_callable($this->editValueCallback))
+        {
+            return call_user_func($this->editValueCallback, $row);
+        }else{
+            if(is_object($row) && method_exists($row, 'toArray'))
+                $row = $row->toArray();
+            return $row[$this->name];
+        }
     }
 }

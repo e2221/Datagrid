@@ -28,12 +28,14 @@ use e2221\Datagrid\Document\TitleRow\TitleColumnTemplate;
 use e2221\Datagrid\Document\TitleRow\TitleRowTemplate;
 use e2221\Datagrid\Document\TitleRow\TitleTemplate;
 use e2221\Datagrid\Export\CsvExport;
+use e2221\HtmElement\BaseElement;
 use Exception;
 use Nette\Application\AbortException;
 use Nette\Application\UI;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\ComponentModel\IComponent;
 use Nette\Forms\Container;
+use Nette\Utils\Html;
 use Nette\Utils\Paginator;
 use Nette\Utils\Random;
 
@@ -111,6 +113,25 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function getDocumentTemplate(): DocumentTemplate
     {
         return $this->documentTemplate;
+    }
+
+    /**
+     * Set Datagrid Title
+     * @param string|Html|BaseElement $title
+     * @return TitleTemplate
+     */
+    public function setTitle($title)
+    {
+        $t = $this->documentTemplate->getTitleRowTemplate()->setTitleTemplate();
+        if($title instanceof Html)
+        {
+            $t->addHtml($title);
+        }else if($title instanceof BaseElement){
+            $t->addElement($title);
+        }else{
+            $t->setTextContent($title);
+        }
+        return $t;
     }
 
     /**************************************************************************
@@ -702,19 +723,24 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      */
     private function generateEditFormFactory(): void
     {
+        $default = [];
         $editableColumns = $this->getEditableColumns();
         if(count($editableColumns) > 0)
         {
-            $this->setEditFormFactory(function ($row) use ($editableColumns){
+            $this->setEditFormFactory(function ($row) use ($editableColumns, $default){
                 $form = new Container();
                 foreach($editableColumns as $name => $column)
                 {
                     $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
+                    if($row)
+                    {
+                        $default[$name] = $column->getEditValue($row);
+                    }
                 }
                 $form->addSubmit('save', 'Save');
                 $form->addSubmit('cancel', 'Cancel');
                 if ($row) {
-                    $form->setDefaults($row);
+                    $form->setDefaults($default);
                 }
                 return $form;
             });
