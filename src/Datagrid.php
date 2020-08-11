@@ -76,6 +76,9 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var int|null @persistent Paginator - items per page */
     public ?int $itemsPerPage=null;
 
+    /** @var array|null @persistent Multiple filter */
+    public array $multipleFilter = [];
+
     /** @var callable */
     protected $multipleFilterFormFactory;
 
@@ -312,8 +315,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         if ($this->filterFormFactory) {
             $this['form']['filter']->setDefaults($this->filter);
         }
-        if($this->multipleFilterFormFactory && array_key_exists('_multiple', $this->filter)) {
-            $this['form']['filterMultiple']->setDefaults($this->filter['_multiple']);
+        if($this->multipleFilterFormFactory && count($this->multipleFilter)) {
+            $this['form']['filterMultiple']->setDefaults($this->multipleFilter);
         }
 
         if($this->paginator instanceof Paginator && !is_null($this->itemsPerPage))
@@ -408,10 +411,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      */
     private function showCancelFilterButton(): bool
     {
-        $filter = $this->filterDataSource;
-        if(array_key_exists('_multiple', $filter))
-            unset($filter['_multiple']);
-        return $filter != $this->filterDefaults;
+        return $this->filterDataSource != $this->filterDefaults;
     }
 
     /**
@@ -420,7 +420,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      */
     private function showMultipleCancelFilterButton(): bool
     {
-        return array_key_exists('_multiple', $this->filterDataSource);
+        return (bool) count($this->multipleFilter);
     }
 
 
@@ -457,6 +457,57 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * Rewrite
+     * @param null $key
+     * @return mixed
+     * @throws Exception
+     */
+    protected function getData($key = null)
+    {
+        if (!$this->data) {
+            $onlyRow = $key !== null && $this->presenter->isAjax();
+
+            if ($this->orderColumn !== NULL && !isset($this->columns[$this->orderColumn])) {
+                $this->orderColumn = NULL;
+            }
+
+            if (!$onlyRow && $this->paginator) {
+                $itemsCount = call_user_func(
+                    $this->paginatorItemsCountCallback,
+                    $this->filterDataSource,
+                    $this->orderColumn ? [$this->orderColumn, strtoupper($this->orderType)] : null
+                );
+
+                $this->paginator->setItemCount($itemsCount);
+                if ($this->paginator->page !== $this->page) {
+                    $this->paginator->page = $this->page = 1;
+                }
+            }
+
+            $this->data = call_user_func(
+                $this->dataSourceCallback,
+                $this->filterDataSource,
+                $this->orderColumn ? [$this->orderColumn, strtoupper($this->orderType)] : null,
+                $onlyRow ? null : $this->paginator,
+                $this->multipleFilter
+            );
+        }
+
+        if ($key === null) {
+            return $this->data;
+        }
+
+        foreach ($this->data as $row) {
+            if ($this->getter($row, $this->rowPrimaryKey) == $key) {
+                return $row;
+            }
+        }
+
+        throw new \Exception('Row not found ' . $key);
+    }
+
+
+    /**
      * Rewrite processForm to implement filter multiple
      * @param UI\Form $form
      * @throws AbortException
@@ -484,15 +535,14 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 }
 
                 if(count($values) > 0)
-                    $this->filter['_multiple'] = $this->filterDataSource['_multiple'] = $values;
+                    $this->multipleFilter = $values;
                 $this->redrawControl('rows');
                 return;
             } elseif ($form['filterMultiple']['cancelMultiple']->isSubmittedBy()) {
                 if ($this->paginator) {
                     $this->page = $this->paginator->page = 1;
                 }
-                unset($this->filterDataSource['_multiple']);
-                $this->filter = $this->filterDataSource;
+                $this->multipleFilter = [];
                 $form['filterMultiple']->setValues([], true);
                 $this->redrawControl('rows');
                 return;
@@ -526,8 +576,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 if ($this->paginator) {
                     $this->page = $this->paginator->page = 1;
                 }
-                if(isset($this->filterDataSource['_multiple']))
-                    $values['_multiple'] = $this->filterDataSource['_multiple'];
                 $this->filter = $this->filterDataSource = $values;
                 $this->redrawControl('rows');
             } elseif ($form['filter']['cancel']->isSubmittedBy()) {
@@ -536,8 +584,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 }
 
                 $filterDefault = $this->filterDefaults;
-                if(isset($this->filterDataSource['_multiple']))
-                    $filterDefault['_multiple'] = $this->filterDataSource['_multiple'];
                 $this->filter = $this->filterDataSource = $filterDefault;
                 $form['filter']->setValues($this->filter, true);
                 $this->redrawControl('rows');
