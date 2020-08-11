@@ -324,8 +324,8 @@ BLOCKS ADDED
                             {input $column->name autofocus=>'true'}
                         {/if}
                     {/foreach}
-                    <button type="submit" n:name="filterMultiple" class="btn btn-sm btn-outline-primary"><i class="fas fa-search"></i></button>
-                    {*input filterMultiple class=>''*}
+                    <button type="submit" n:name="filterMultiple" class="btn btn-sm btn-outline-primary" title="Filter"><i class="fas fa-search"></i></button>
+                    <button n:if="$showMultipleCancel" type="submit" n:name="cancelMultiple" class="btn btn-sm btn-outline-warning" title="Cancel"><i class="fas fa-times"></i></button>
                 {/formContainer}
             </div>
         {$multipleFilterTemplate->renderEndTag()|noescape}

@@ -370,6 +370,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->sendOnlyRowParentSnippet = $this->sendOnlyRowParentSnippet;
         $this->template->cellsTemplates = $this->getCellsTemplates();
         $this->template->showFilterCancel = $this->showCancelFilterButton(); // @ intentionaly
+        $this->template->showMultipleCancel = $this->showMultipleCancelFilterButton();
         $this->template->setFile(__DIR__ . '/templates/Datagrid.latte');
 
         $this->onRender($this);
@@ -412,6 +413,16 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             unset($filter['_multiple']);
         return $filter != $this->filterDefaults;
     }
+
+    /**
+     * Show cancel filter button?
+     * @return bool
+     */
+    private function showMultipleCancelFilterButton(): bool
+    {
+        return array_key_exists('_multiple', $this->filterDataSource);
+    }
+
 
     /**
      * Rewrites createComponentForm => filterMultiple added
@@ -460,6 +471,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
                 foreach($values as $valueK => $val)
                 {
+                    if(empty($val))
+                        continue;
                     foreach($this->getMultipleFilterColumns($valueK) as $k)
                     {
                         $values[$k] = $val;
@@ -469,7 +482,9 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 if ($this->paginator) {
                     $this->page = $this->paginator->page = 1;
                 }
-                $this->filter['_multiple'] = $this->filterDataSource['_multiple'] = $values;
+
+                if(count($values) > 0)
+                    $this->filter['_multiple'] = $this->filterDataSource['_multiple'] = $values;
                 $this->redrawControl('rows');
                 return;
             } elseif ($form['filterMultiple']['cancelMultiple']->isSubmittedBy()) {
@@ -592,7 +607,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * @param string $caption
      * @param string $html
      * @param bool $required
-     * @param array $selection
+     * @param array|null $selection
      * @param array $htmlDecorations
      * @return Container
      */
@@ -776,6 +791,7 @@ class DatagridTemplate extends Template
     public ?string $allOptionTitle;
     public ?int $itemsPerPage;
     public bool $hasMultipleFilter;
+    public bool $showMultipleCancel;
 
     public TheadTemplate $theadTemplate;
     public TbodyTemplate $tbodyTemplate;
