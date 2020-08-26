@@ -32,7 +32,7 @@ class HeadColumnTemplate extends BaseElement
     public function render(string $columnName=null): ?Html
     {
         if(!is_null($columnName))
-            $this->class .= ' grid-col-' . $columnName;
+            $this->class = ' grid-col-' . $columnName;
         if(is_callable($this->attributesCallback))
         {
             $attrs = call_user_func($this->attributesCallback, $columnName);

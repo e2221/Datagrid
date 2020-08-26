@@ -84,8 +84,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /** @var string Export file name */
     public string $exportFileName='export.csv';
-
-
+    
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
@@ -102,6 +101,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->exportFileName = $exportFileName;
         return $this;
     }
+
 
     /**************************************************************************
      *
@@ -457,6 +457,16 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * @param $key
+     * @return $this
+     */
+    public function setEditRowKey($key): Datagrid
+    {
+        $this->editRowKey = $key;
+        return $this;
+    }
+
+    /**
      * Rewrite
      * @param null $key
      * @return mixed
@@ -475,7 +485,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $itemsCount = call_user_func(
                     $this->paginatorItemsCountCallback,
                     $this->filterDataSource,
-                    $this->orderColumn ? [$this->orderColumn, strtoupper($this->orderType)] : null
+                    $this->orderColumn ? [$this->orderColumn, strtoupper($this->orderType)] : null,
+                    $this->multipleFilter
                 );
 
                 $this->paginator->setItemCount($itemsCount);
@@ -813,7 +824,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
  *
  * Template
  *
-***************************************************************************/
+ ***************************************************************************/
 class DatagridTemplate extends Template
 {
     public IComponent $form;

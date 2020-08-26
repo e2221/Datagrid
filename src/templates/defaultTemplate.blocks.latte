@@ -177,7 +177,7 @@
         {/if}
     {/foreach}
 
-    {if $hasActionsColumn}
+    {if $shouldHaveActions}
         {$dataActionsColumnTemplate->renderStartTag()|noescape}
         {*}<td class="grid-col-actions">{*}
             {if $editRow}
@@ -188,10 +188,8 @@
             {else}
                 {ifset #row-actions}
                     {include #row-actions row => $row, primary => $primary}
-                {elseif $shouldHaveActions}
+                {else}
                     {include #row-actions-generated row => $row, primary => $primary}
-                {elseif $control->getEditFormFactory()}
-                    {include #row-actions-edit-link row => $row, primary => $primary}
                 {/ifset}
             {/if}
         {*}</td>{*}
