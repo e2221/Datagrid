@@ -52,7 +52,7 @@
                 {*}</th>{*}
                 {$headColumnTemplate->renderEndTag()|noescape}
             {/foreach}
-            {if $hasActionsColumn}
+            {if $shouldHaveActions}
                 {$headActionsColumnTemplate->renderStartTag()|noescape}
                     {*}<th class="grid-col-actions">{*}
                         {include #global-custom-actions}
