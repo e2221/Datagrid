@@ -300,7 +300,7 @@ BLOCKS ADDED
     {*}<tr id="{$itemDetailId}" class="collapse">{*}
         {$itemDetailColumnTemplate->renderStartTag($colspan, $primary, $row)|noescape}
         {*}<td colspan="{$colspan}">{*}
-            {ifset #row-item-detail#}
+            {ifset #row-item-detail}
                 {include #row-item-detail row => $row, primary => $primary}
             {else}
                 {$dataActionsColumnTemplate->getRowActionItemDetail()->renderContent($row, $primary)}
