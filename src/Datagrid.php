@@ -679,7 +679,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 break;
             default:
                 $addMethod = 'add' . $html;
-                if(!method_exists($this, $addMethod))
+                if(!method_exists($container, $addMethod))
                     $addMethod = 'addText';
                 $container->$addMethod($name, $caption);
                 break;
@@ -774,7 +774,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /**
      * Get editable columns
-     * @return array
+     * @return ColumnExtended[]
      */
     private function getEditableColumns(): array
     {
@@ -801,8 +801,11 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         {
             $this->setEditFormFactory(function ($row) use ($editableColumns, $default){
                 $form = new Container();
+                $passwordsColumns = [];
                 foreach($editableColumns as $name => $column)
                 {
+                    if($column->getHtmlType() == 'Password')
+                        $passwordsColumns[] = $name;
                     $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
                     if($row)
                     {
@@ -813,6 +816,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $form->addSubmit('cancel', 'Cancel');
                 if ($row) {
                     $form->setDefaults($default);
+                    foreach($passwordsColumns as $column)
+                        $form[$column]->getControlPrototype()->value = $default[$column];
                 }
                 return $form;
             });

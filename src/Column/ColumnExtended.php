@@ -213,9 +213,9 @@ class ColumnExtended extends Column
      * @param string $htmlType
      * @return ColumnExtended
      */
-    public function setHtmlType(string $htmlType='text'): ColumnExtended
+    public function setHtmlType(string $htmlType='Text'): ColumnExtended
     {
-        $this->htmlType = $htmlType;
+        $this->htmlType = ucfirst($htmlType);
         return $this;
     }
 
