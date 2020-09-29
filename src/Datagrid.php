@@ -146,10 +146,10 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /**
      * Add column
      * @param $name
-     * @param null $label
+     * @param string|null $label
      * @return ColumnExtended
      */
-    public function addColumn($name, $label = null): ColumnExtended
+    public function addColumn($name, ?string $label = null): ColumnExtended
     {
         if (!$this->rowPrimaryKey) {
             $this->rowPrimaryKey = $name;
