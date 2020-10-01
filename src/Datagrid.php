@@ -84,7 +84,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /** @var string Export file name */
     public string $exportFileName='export.csv';
-    
+
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
@@ -671,11 +671,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null, array $htmlDecorations=[]): Container
     {
         switch ($html){
-            case 'select':
+            case 'Select':
                 $container->addSelect($name, $caption, $selection);
-                break;
-            case 'textarea':
-                $container->addTextArea($name, $caption);
                 break;
             default:
                 $addMethod = 'add' . $html;

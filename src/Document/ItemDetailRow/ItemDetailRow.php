@@ -30,6 +30,9 @@ class ItemDetailRow extends BaseElement
 
     public function render(?string $itemDetailId=null, $primary=null, $row=null): ?Html
     {
+        $this->element->attrs = [];
+        $this->attributes = [];
+
         if(is_callable($this->setAttributesCallback))
             $this->attributes = call_user_func($this->setAttributesCallback, $primary, $row);
         $this->attributes['id'] = $itemDetailId;
