@@ -753,7 +753,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $filterableColumns = [];
         foreach ($this->columns as $columnName => $column)
         {
-            if($column->isFilterable())
+            if($column->isFilterable()  && $column->isHidden() === false)
             {
                 $filterableColumns[$columnName] = $column;
                 $this->isFilterable = TRUE;
@@ -793,7 +793,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $multipleFColumns = [];
         foreach ($this->columns as $columnName => $column)
         {
-            if($column->isMultipleFilterable())
+            if($column->isMultipleFilterable()  && $column->isHidden() === false)
             {
                 $multipleFColumns[$columnName] = $column;
                 $this->isMultipleFilterable = TRUE;
@@ -833,7 +833,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $editableColumns = [];
         foreach ($this->columns as $columnName => $column)
         {
-            if($column->isEditable())
+            if($column->isEditable() && $column->isHidden() === false)
             {
                 $editableColumns[$columnName] = $column;
                 $this->isEditable = TRUE;
