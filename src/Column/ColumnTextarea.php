@@ -16,7 +16,6 @@ class ColumnTextarea extends ColumnExtended
     /** @var int|null Rows */
     protected ?int $cols=null;
 
-
     /**
      * ColumnTextarea constructor.
      * @param string $name

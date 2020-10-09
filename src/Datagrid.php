@@ -11,6 +11,7 @@ use e2221\Datagrid\Column\ColumnDate;
 use e2221\Datagrid\Column\ColumnEmail;
 use e2221\Datagrid\Column\ColumnExtended;
 use e2221\Datagrid\Column\ColumnNumber;
+use e2221\Datagrid\Column\ColumnPrimary;
 use e2221\Datagrid\Column\ColumnSelect;
 use e2221\Datagrid\Column\ColumnText;
 use e2221\Datagrid\Column\ColumnTextarea;
@@ -150,6 +151,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * @param $name
      * @param string|null $label
      * @return ColumnExtended
+     * @deprecated use addColumnX instead
+     * @ignore
      */
     public function addColumn($name, $label = null): ColumnExtended
     {
@@ -158,6 +161,20 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         }
         $label = $label ? $this->translate($label) : ucfirst($name);
         return $this->columns[$name] = new ColumnExtended($name, $label, $this);
+    }
+
+    /**
+     * Add primary column
+     * @param string $name
+     * @param string $label
+     * @return ColumnPrimary
+     */
+    public function addColumnPrimary(string $name='id', string $label='ID'): ColumnPrimary
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnPrimary($name, $label, $this);
     }
 
     /**

@@ -11,7 +11,7 @@ use Nextras\Datagrid\Datagrid;
 class ColumnDate extends ColumnExtended
 {
     /**
-     * ColumnTextarea constructor.
+     * ColumnDate constructor.
      * @param string $name
      * @param string|null $label
      * @param Datagrid $grid

@@ -11,7 +11,7 @@ use Nextras\Datagrid\Datagrid;
 class ColumnEmail extends ColumnExtended
 {
     /**
-     * ColumnTextarea constructor.
+     * ColumnEmail constructor.
      * @param string $name
      * @param string|null $label
      * @param Datagrid $grid
@@ -21,7 +21,6 @@ class ColumnEmail extends ColumnExtended
         parent::__construct($name, $label, $grid);
         $this->setHtmlType('email');
     }
-
 
     /**
      * @internal

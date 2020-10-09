@@ -12,7 +12,7 @@ use Nette\Forms\Container;
 class ColumnText extends ColumnExtended
 {
     /**
-     * ColumnTextarea constructor.
+     * ColumnText constructor.
      * @param string $name
      * @param string|null $label
      * @param Datagrid $grid

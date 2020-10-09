@@ -11,7 +11,7 @@ use Nextras\Datagrid\Datagrid;
 class ColumnSelect extends ColumnExtended
 {
     /**
-     * ColumnTextarea constructor.
+     * ColumnSelect constructor.
      * @param string $name
      * @param string|null $label
      * @param Datagrid $grid

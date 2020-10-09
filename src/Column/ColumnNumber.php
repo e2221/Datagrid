@@ -11,7 +11,7 @@ use Nextras\Datagrid\Datagrid;
 class ColumnNumber extends ColumnExtended
 {
     /**
-     * ColumnTextarea constructor.
+     * ColumnNumber constructor.
      * @param string $name
      * @param string|null $label
      * @param Datagrid $grid
