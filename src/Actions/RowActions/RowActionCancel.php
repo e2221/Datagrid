@@ -7,8 +7,7 @@ use Nette\Utils\Html;
 
 class RowActionCancel extends RowAction
 {
-
-    protected string $class = 'btn btn-xs btn-warning';
+    protected string $class = 'btn btn-xs btn-warning datagrid-cancel-button';
 
     public function __construct(string $name, string $title)
     {

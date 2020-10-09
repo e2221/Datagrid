@@ -10,6 +10,8 @@ class RowActionEdit extends RowAction
 {
     protected ?string $spanClass = 'fa fa-pencil fa fa-pencil-alt';
 
+    protected string $class = 'btn btn-xs btn-secondary datagrid-edit-button';
+
     public function __construct(string $name, string $title, Datagrid $datagrid)
     {
         parent::__construct($name, $title, $datagrid);
