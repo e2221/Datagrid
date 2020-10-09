@@ -65,6 +65,9 @@ class DocumentTemplate
 
     protected Datagrid $datagrid;
 
+    /** @var EmptyDataTemplate template to style empty data content */
+    protected EmptyDataTemplate $emptyDataTemplate;
+
     public function __construct(Datagrid $datagrid)
     {
         $this->datagrid = $datagrid;
@@ -76,6 +79,7 @@ class DocumentTemplate
         $this->headFilterRowTemplate = new HeadFilterRowTemplate();
         $this->dataRowTemplate = new DataRowTemplate(null, null, null, $datagrid);
         $this->itemDetailRow = new ItemDetailRow();
+        $this->emptyDataTemplate = new EmptyDataTemplate();
     }
 
     /**************************************************************************
@@ -109,6 +113,15 @@ class DocumentTemplate
     public function getTfootTemplate(): TfootTemplate
     {
         return $this->tfootTemplate;
+    }
+
+    /**
+     * Get empty data template
+     * @return EmptyDataTemplate
+     */
+    public function getEmptyDataTemplate(): EmptyDataTemplate
+    {
+        return $this->emptyDataTemplate;
     }
 
     /**

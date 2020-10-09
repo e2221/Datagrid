@@ -79,7 +79,11 @@
                 {/foreach}
 
             {else}
-                {ifset #empty-result}{include #empty-result}{/ifset}
+                {ifset #empty-result}
+                    {include #empty-result}
+                {else}
+                    {$emptyDataTemplate->render()}
+                {/ifset}
             {/if}
             {*}</tbody>{*}
             {$tbodyTemplate->renderEndTag()|noescape}
