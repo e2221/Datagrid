@@ -7,7 +7,13 @@ use e2221\Datagrid\Actions\Export\ExportAction;
 use e2221\Datagrid\Actions\HeaderActions\CustomAction;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
 use e2221\Datagrid\Actions\RowActions\RowCustomAction;
+use e2221\Datagrid\Column\ColumnDate;
+use e2221\Datagrid\Column\ColumnEmail;
 use e2221\Datagrid\Column\ColumnExtended;
+use e2221\Datagrid\Column\ColumnNumber;
+use e2221\Datagrid\Column\ColumnSelect;
+use e2221\Datagrid\Column\ColumnText;
+use e2221\Datagrid\Column\ColumnTextarea;
 use e2221\Datagrid\Document\DataRow\DataActionsColumnTemplate;
 use e2221\Datagrid\Document\DataRow\DataColumnTemplate;
 use e2221\Datagrid\Document\DataRow\DataRowTemplate;
@@ -30,6 +36,7 @@ use e2221\Datagrid\Document\TitleRow\TitleTemplate;
 use e2221\Datagrid\Export\CsvExport;
 use e2221\HtmElement\BaseElement;
 use Exception;
+use InvalidArgumentException;
 use Nette\Application\AbortException;
 use Nette\Application\UI;
 use Nette\Bridges\ApplicationLatte\Template;
@@ -159,6 +166,90 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * Add Column Datetime
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnDate
+     */
+    public function addColumnDatetime(string $name, ?string $label=null): ColumnDate
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnDate($name, $label, $this);
+    }
+
+    /**
+     * Add column email
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnEmail
+     */
+    public function addColumnEmail(string $name, ?string $label=null): ColumnEmail
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnEmail($name, $label, $this);
+    }
+
+    /**
+     * Add column number
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnNumber
+     */
+    public function addColumnNumber(string $name, ?string $label=null): ColumnNumber
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnNumber($name, $label, $this);
+    }
+
+    /**
+     * Add column select
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnSelect
+     */
+    public function addColumnSelect(string $name, ?string $label=null): ColumnSelect
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnSelect($name, $label, $this);
+    }
+
+    /**
+     * Add column text
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnText
+     */
+    public function addColumnText(string $name, ?string $label=null): ColumnText
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnText($name, $label, $this);
+    }
+
+    /**
+     * Add column textarea
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnTextarea
+     */
+    public function addColumnTextarea(string $name, ?string $label=null): ColumnTextarea
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnTextarea($name, $label, $this);
+    }
+
+    /**
      * Get column
      * @param  string $name
      * @return ColumnExtended
@@ -166,7 +257,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function getColumn($name)
     {
         if (!isset($this->columns[$name])) {
-            throw new \InvalidArgumentException("Unknown column $name.");
+            throw new InvalidArgumentException("Unknown column $name.");
         }
         return $this->columns[$name];
     }
@@ -376,7 +467,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->showMultipleCancel = $this->showMultipleCancelFilterButton();
         $this->template->setFile(__DIR__ . '/templates/Datagrid.latte');
 
-        $this->onRender($this);
+        if(is_callable($this->onRender))
+            $this->onRender($this);
         $this->template->render();
     }
 
@@ -514,7 +606,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             }
         }
 
-        throw new \Exception('Row not found ' . $key);
+        throw new Exception('Row not found ' . $key);
     }
 
 
@@ -693,7 +785,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /**
      * Get filterable columns
-     * @return array
+     * @return ColumnExtended[]
      */
     private function getFilterableColumns(): array
     {
@@ -721,7 +813,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $form = new Container();
                 foreach($filterableColumns as $name => $column)
                 {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
+                    $form = $column->getFilterControl($form);
+                    //$form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
                 }
                 $form->addSubmit('filter', 'Filter');
                 $form->addSubmit('cancel', 'Cancel');
@@ -732,7 +825,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /**
      * Get multiple filterable columns
-     * @return array
+     * @return ColumnExtended[]
      */
     private function getMultipleFilterableColumns(): array
     {
@@ -760,7 +853,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $form = new Container();
                 foreach($multipleColumns as $name => $column)
                 {
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
+                    $form = $column->getMultipleFilterControl($form);
+                    //$form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
                 }
                 $form->addSubmit('filterMultiple', 'Filter');
                 $form->addSubmit('cancelMultiple', 'Cancel');
@@ -801,13 +895,13 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 $passwordsColumns = [];
                 foreach($editableColumns as $name => $column)
                 {
+                    //support for column password
                     if($column->getHtmlType() == 'Password')
                         $passwordsColumns[] = $name;
-                    $form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
+                    $form = $column->getEditControl($form);
+                    //$form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
                     if($row)
-                    {
                         $default[$name] = $column->getEditValue($row);
-                    }
                 }
                 $form->addSubmit('save', 'Save');
                 $form->addSubmit('cancel', 'Cancel');

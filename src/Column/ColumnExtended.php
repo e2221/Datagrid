@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace e2221\Datagrid\Column;
 
+use Nette\Forms\Container;
 use Nette\Utils\Html;
 use Nextras\Datagrid\Column;
 
 class ColumnExtended extends Column
 {
+
     /** @var bool Is column filterable */
     protected bool $filterable = FALSE;
 
@@ -52,6 +54,11 @@ class ColumnExtended extends Column
 
     /** @var callable|null Set value in edit form (makes sense if column is set as editable) */
     protected $editValueCallback = null;
+
+    /** @var array|string[] Default input attributes */
+    public array $defaultInputAttributes = [
+        'class' => 'form-control form-control-sm'
+    ];
 
 
     /**************************************************************************
@@ -352,5 +359,73 @@ class ColumnExtended extends Column
                 $row = $row->toArray();
             return $row[$this->name];
         }
+    }
+
+    /**
+     * Universal add control
+     * @param Container $container
+     * @return Container
+     *
+     * @internal
+     */
+    public function addControl(Container $container): Container
+    {
+        switch ($this->htmlType){
+            case 'Select':
+                $container->addSelect($this->name, $this->label, $this->getEditSelection());
+                break;
+            default:
+                $addMethod = 'add' . $this->htmlType;
+                if(!method_exists($container, $addMethod))
+                    $addMethod = 'addText';
+                $container->$addMethod($this->name, $this->label);
+                break;
+        }
+        foreach($this->defaultInputAttributes as $attribute => $value)
+            $container[$this->name]->setHtmlAttribute($attribute, $value);
+        if($this->required)
+            $container[$this->name]->setRequired();
+        return $container;
+    }
+
+    /**
+     * Get universal edit control
+     * @param Container $container
+     * @return Container
+     *
+     * @internal
+     */
+    public function getEditControl(Container $container): Container
+    {
+        $container = $this->addControl($container);
+        foreach($this->getEditInputHtmlDecorations() as $attribute => $value)
+            $container[$this->name]->setHtmlAttribute($attribute, $value);
+        return $container;
+    }
+
+    /**
+     * Get universal filter control
+     * @param Container $container
+     * @return Container
+     */
+    public function getFilterControl(Container $container): Container
+    {
+        $container = $this->addControl($container);
+        foreach($this->getFilterInputHtmlDecorations() as $attribute => $value)
+            $container[$this->name]->setHtmlAttribute($attribute, $value);
+        return $container;
+    }
+
+    /**
+     * Get universal multiple filter control
+     * @param Container $container
+     * @return Container
+     */
+    public function getMultipleFilterControl(Container $container): Container
+    {
+        $container = $this->addControl($container);
+        foreach($this->getFilterMultipleHtmlDecorations() as $attribute => $value)
+            $container[$this->name]->setHtmlAttribute($attribute, $value);
+        return $container;
     }
 }
