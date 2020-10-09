@@ -278,7 +278,10 @@ class RowAction extends UniversalAction
     {
         $class = is_callable($this->classCallback) ? (string)call_user_func($this->classCallback, $this->row, $this->primary) : $this->class;
         $addClass = is_callable($this->addClassCallback) ? (array)call_user_func($this->addClassCallback, $this->row, $this->primary) : $this->addClass;
-        return $class . (count($addClass) > 0 ? ' ' . implode(' ', $addClass) : '');
+        return
+            sprintf('%s%s', $this->defaultClass, empty($this->defaultClass) ? '' : ' ') .
+            sprintf('%s%s', $class, empty($class) ? '' : ' ') .
+            sprintf('%s%s', implode(' ', $addClass), count($addClass) ? '' : ' ');
     }
 
     /**

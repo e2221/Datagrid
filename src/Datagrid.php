@@ -48,11 +48,6 @@ use Nette\Utils\Random;
 
 class Datagrid extends \Nextras\Datagrid\Datagrid
 {
-    /** @var array|string[] Default input attributes */
-    public array $defaultInputAttributes = [
-        'class' => 'form-control form-control-sm'
-    ];
-
     /** @var bool is there at least one editable column? */
     private bool $isEditable = FALSE;
 
@@ -748,40 +743,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * Getters for Filterable, MultipleFilterable, Editable Columns
      *
      ***************************************************************************/
-
-    /**
-     * Generates universal Form Container
-     * @param Container $container
-     * @param string $name
-     * @param string $caption
-     * @param string $html
-     * @param bool $required
-     * @param array|null $selection
-     * @param array $htmlDecorations
-     * @return Container
-     */
-    private function formContainerGenerator(Container $container, string $name, string $caption='', string $html='text', bool $required=false, ?array $selection=null, array $htmlDecorations=[]): Container
-    {
-        switch ($html){
-            case 'Select':
-                $container->addSelect($name, $caption, $selection);
-                break;
-            default:
-                $addMethod = 'add' . $html;
-                if(!method_exists($container, $addMethod))
-                    $addMethod = 'addText';
-                $container->$addMethod($name, $caption);
-                break;
-        }
-        foreach ($this->defaultInputAttributes as $attribute => $value) {
-            $container[$name]->setHtmlAttribute($attribute, $value);
-        }
-        foreach ($htmlDecorations as $tag => $value)
-            $container[$name]->setHtmlAttribute($tag, $value);
-        if($required)
-            $container[$name]->setRequired();
-        return $container;
-    }
 
     /**
      * Get filterable columns

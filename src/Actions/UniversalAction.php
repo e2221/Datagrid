@@ -30,6 +30,9 @@ class UniversalAction
     /** @var string Style class */
     protected string $class='btn btn-xs btn-secondary';
 
+    /** @var string Default class */
+    protected string $defaultClass='';
+
     /** @var array classes that will be connected to class */
     protected array $addClass=[];
 

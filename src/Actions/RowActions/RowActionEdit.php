@@ -9,8 +9,8 @@ use Nette\Utils\Html;
 class RowActionEdit extends RowAction
 {
     protected ?string $spanClass = 'fa fa-pencil fa fa-pencil-alt';
-
-    protected string $class = 'btn btn-xs btn-secondary datagrid-edit-button';
+    protected string $class = 'btn btn-xs btn-secondary';
+    protected string $defaultClass = 'datagrid-edit-button';
 
     public function __construct(string $name, string $title, Datagrid $datagrid)
     {

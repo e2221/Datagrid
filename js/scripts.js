@@ -61,7 +61,7 @@ function hideEditButtons()
         item.addEventListener("click", function (){
             var editButtons_a = document.querySelectorAll('.datagrid-edit-button');
             editButtons_a.forEach(function(button){
-                button.classList.add("d-none");
+                button.classList.add("disabled");
             });
         });
     });
@@ -76,7 +76,7 @@ function showEditButtons()
     cancelButton.addEventListener("click", function(){
         var editButtons_a = document.querySelectorAll('.datagrid-edit-button');
         editButtons_a.forEach(function(button){
-            button.classList.remove("d-none");
+            button.classList.remove("disabled");
         });
     });
 }
