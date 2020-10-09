@@ -68,6 +68,7 @@ class ColumnExtended extends Column
      ***************************************************************************/
 
     /**
+     * Set html content callback
      * @param callable|null $htmlCallback
      * @return ColumnExtended
      */
@@ -78,6 +79,7 @@ class ColumnExtended extends Column
     }
 
     /**
+     * Set link callback
      * @param callable|null $linkCallback
      * @return ColumnExtended
      */
@@ -88,6 +90,7 @@ class ColumnExtended extends Column
     }
 
     /**
+     * Modify cell value in grid
      * @param callable|null $cellValueCallback
      * @return ColumnExtended
      */
@@ -98,6 +101,7 @@ class ColumnExtended extends Column
     }
 
     /**
+     * Set value to input during edit
      * @param callable|null $editValueCallback
      * @return $this
      */

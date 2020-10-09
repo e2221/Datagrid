@@ -8,8 +8,8 @@ use Nette\Utils\Html;
 
 class RowActionSave extends RowAction
 {
-
     protected string $class = 'btn btn-xs btn-primary';
+    protected string $defaultClass = 'datagrid-cancel-button';
 
     public function __construct(string $name, string $title)
     {

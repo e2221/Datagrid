@@ -73,10 +73,12 @@ function hideEditButtons()
 function showEditButtons()
 {
     let cancelButton = document.querySelector('.datagrid-cancel-button');
-    cancelButton.addEventListener("click", function(){
-        var editButtons_a = document.querySelectorAll('.datagrid-edit-button');
-        editButtons_a.forEach(function(button){
-            button.classList.remove("disabled");
+    if(cancelButton) {
+        cancelButton.addEventListener("click", function () {
+            var editButtons_a = document.querySelectorAll('.datagrid-edit-button');
+            editButtons_a.forEach(function (button) {
+                button.classList.remove("disabled");
+            });
         });
-    });
+    }
 }
