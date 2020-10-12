@@ -148,19 +148,17 @@ class RowAction extends UniversalAction
     }
 
 
-
-
     /*
      * **********************************************************************
      */
 
     /**
      * @param $row
-     * @param int $primary
+     * @param int|string $primary
      * @param string|null $itemDetailId
      * @return Html|null
      */
-    public function render($row, int $primary, ?string $itemDetailId=null): ?Html
+    public function render($row, $primary, ?string $itemDetailId=null): ?Html
     {
         $this->row = $row;
         $this->primary = $primary;

@@ -13,9 +13,10 @@
 
 
 var openLinkAjax;
-openLinkAjax = function(url, params){
+openLinkAjax = function(url, method, params){
+    method = method || 'POST';
     _context.invoke(function(di) {
-        di.getService('page').open(url, 'POST', params);
+        di.getService('page').open(url, method, params);
     });
 }
 
@@ -47,7 +48,7 @@ function itemsPageChanger()
     itemsPerPageSelector.forEach(function (item) {
         item.addEventListener("change", function () {
             let link = this.options[this.selectedIndex].dataset.link;
-            openLinkAjax(link);
+            openLinkAjax(link, 'POST');
         })
     });
 }
@@ -105,6 +106,7 @@ datagridSortable = function() {
                 next_id = row.next().data('id');
             }
             url = $(this).data('sortable-url');
+            alert(item_id + ' '+prev_id+' '+next_id);
             return openLinkAjax(url, {'itemId':item_id, 'prevId':prev_id, 'nextId':next_id});
         },
         helper: function(e, ui) {

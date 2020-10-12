@@ -91,9 +91,9 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /** @var bool Rows sortable */
     protected bool $sortableRows=false;
-
-    /** @var string|null Link to sortable signal */
-    protected ?string $sortableHandler=null;
+    
+    /** @var null|callable  */
+    protected $sortCallback=null;
 
     public function __construct()
     {
@@ -125,23 +125,26 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * Set rows sortable
      * @param bool $sortable
      * @return $this
+     * @throws UI\InvalidLinkException
      */
     public function setSortableRows(bool $sortable=true): self
     {
         $this->sortableRows = $sortable;
-        $this->getDocumentTemplate()->setSortableRows($sortable);
+        $this->getDocumentTemplate()
+            ->setSortableRows($sortable)
+            ->getTbodyTemplate()
+            ->setDataAttribute('sortable-url', $this->link('rowsSort!'));
         return $this;
     }
 
     /**
-     * Set sortable handler
-     * @param string|null $handler
+     * Set sortable rows callback
+     * @param null|callable $callback
      * @return $this
      */
-    public function setSortableHandler(?string $handler=null): self
+    public function setSortableRowsCallback(?callable $callback): self
     {
-        $this->sortableHandler = $handler;
-        $this->getDocumentTemplate()->getTbodyTemplate()->setDataAttribute('sortable-url', $this->sortableHandler);
+        $this->sortCallback = $callback;
         return $this;
     }
 
@@ -427,6 +430,18 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function handleExport(): void
     {
         $this->exportData();
+    }
+
+    /**
+     * Rows sort
+     * @param int|null $itemId
+     * @param int|null $prevId
+     * @param int|null $nextId
+     */
+    public function handleRowsSort(?int $itemId=null, ?int $prevId=null, ?int $nextId=null): void
+    {
+        if(is_callable($this->sortCallback))
+            call_user_func($this->sortCallback, $this, $itemId, $prevId, $nextId);
     }
 
     /**************************************************************************

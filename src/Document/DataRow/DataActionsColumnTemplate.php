@@ -42,7 +42,7 @@ class DataActionsColumnTemplate extends BaseElement
     public function setSortable(bool $sortable=true): self
     {
         $this->sortable = $sortable;
-        $this->rowActionSort = new RowActionSortable('__sortable', 'Sort drag and drop');
+        $this->rowActionSort = new RowActionSortable('__sortable', 'Sort');
         return $this;
     }
 
