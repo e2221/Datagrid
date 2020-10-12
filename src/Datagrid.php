@@ -106,6 +106,15 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         return $this;
     }
 
+    /**
+     * Get edit row key
+     * @return mixed
+     */
+    public function getEditRowKey()
+    {
+        return $this->editRowKey;
+    }
+
 
     /**************************************************************************
      *

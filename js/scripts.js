@@ -59,8 +59,9 @@ function hideEditButtons()
     let editButtons = document.querySelectorAll('.datagrid-edit-button');
     editButtons.forEach(function(item){
         item.addEventListener("click", function (){
-            var editButtons_a = document.querySelectorAll('.datagrid-edit-button');
-            editButtons_a.forEach(function(button){
+            let editItemName = 'datagrid-edit-' + item.dataset.datagridName;
+            let buttons = document.querySelectorAll("[datagrid-edit='" + editItemName + "']");
+            buttons.forEach(function(button){
                 button.classList.add("disabled");
             });
         });
@@ -72,11 +73,12 @@ function hideEditButtons()
  */
 function showEditButtons()
 {
-    let cancelButton = document.querySelectorAll('.datagrid-cancel-button');
-    cancelButton.forEach(function (canceelButton_a) {
-        canceelButton_a.addEventListener("click", function () {
-            var editButtons_a = document.querySelectorAll('.datagrid-edit-button');
-            editButtons_a.forEach(function (button) {
+    let cancelButtons = document.querySelectorAll('.datagrid-cancel-button');
+    cancelButtons.forEach(function (item) {
+        item.addEventListener("click", function () {
+            let editItemName = 'datagrid-edit-' + item.dataset.datagridName;
+            let buttons = document.querySelectorAll("[datagrid-edit='" + editItemName + "']");
+            buttons.forEach(function(button){
                 button.classList.remove("disabled");
             });
         });

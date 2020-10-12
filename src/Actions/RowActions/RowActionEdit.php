@@ -19,6 +19,16 @@ class RowActionEdit extends RowAction
 
     public function render($row, $primary, ?string $itemDetailId=null): ?Html
     {
+        //add datagrid name data-attribute
+        $this->setDataAttributes([
+            'datagrid-name'         => $this->datagrid->getName(),
+            'datagrid-edit'         => sprintf('datagrid-edit-%s', $this->datagrid->getName())
+        ]);
+
+        //disabled non edit rows
+        if(!is_null($this->datagrid->getEditRowKey()) && $this->datagrid->getEditRowKey() != $primary)
+            $this->defaultClass = sprintf('%s disabled', $this->defaultClass);
+
         $button = parent::render($row, $primary);
         if(is_null($button))
             return null;
