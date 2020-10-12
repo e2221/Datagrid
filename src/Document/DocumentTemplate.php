@@ -68,6 +68,12 @@ class DocumentTemplate
     /** @var EmptyDataTemplate template to style empty data content */
     protected EmptyDataTemplate $emptyDataTemplate;
 
+    /** @var bool Rows sortable */
+    protected bool $sortableRows=false;
+
+    /** @var string|null Link to sortable signal */
+    protected ?string $sortableHandler=null;
+
     public function __construct(Datagrid $datagrid)
     {
         $this->datagrid = $datagrid;
@@ -81,6 +87,27 @@ class DocumentTemplate
         $this->itemDetailRow = new ItemDetailRow();
         $this->emptyDataTemplate = new EmptyDataTemplate();
     }
+
+    /**************************************************************************
+     *
+     * Sortable
+     *
+     ***************************************************************************/
+
+    /**
+     * Set sortable rows
+     * @param bool $sortable
+     * @return $this
+     */
+    public function setSortableRows(bool $sortable=true): self
+    {
+        $this->sortableRows = $sortable;
+        $this->tbodyTemplate->setSortable($sortable);
+        $this->dataRowTemplate->getDataActionsColumnTemplate()->setSortable($sortable);
+        return $this;
+    }
+
+
 
     /**************************************************************************
      *

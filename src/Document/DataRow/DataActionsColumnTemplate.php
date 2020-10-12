@@ -7,6 +7,7 @@ use e2221\Datagrid\Actions\RowActions\RowActionCancel;
 use e2221\Datagrid\Actions\RowActions\RowActionEdit;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
 use e2221\Datagrid\Actions\RowActions\RowActionSave;
+use e2221\Datagrid\Actions\RowActions\RowActionSortable;
 use e2221\Datagrid\Datagrid;
 use e2221\HtmElement\BaseElement;
 
@@ -20,6 +21,9 @@ class DataActionsColumnTemplate extends BaseElement
     protected RowActionCancel $rowActionCancel;
     protected ?RowActionItemDetail $rowActionItemDetail=null;
     protected RowActionSave $rowActionSave;
+    protected ?RowActionSortable $rowActionSort=null;
+
+    protected bool $sortable=false;
 
     public function __construct(?string $elName = null, ?array $attributes = null, ?string $textContent = null, ?Datagrid $datagrid=null)
     {
@@ -27,10 +31,27 @@ class DataActionsColumnTemplate extends BaseElement
         $this->rowActionEdit = new RowActionEdit('__edit', 'Edit', $this->datagrid);
         $this->rowActionCancel = new RowActionCancel('__cancel', 'Cancel', $this->datagrid);
         $this->rowActionSave = new RowActionSave('__save', 'Save');
-
         parent::__construct($elName, $attributes, $textContent);
     }
 
+    /**
+     * Set grid sortable - print sort button
+     * @param bool $sortable
+     * @return $this
+     */
+    public function setSortable(bool $sortable=true): self
+    {
+        $this->sortable = $sortable;
+        $this->rowActionSort = new RowActionSortable('__sortable', 'Sort drag and drop');
+        return $this;
+    }
+
+    /**
+     * Set item detail
+     * @param string $name
+     * @param string $title
+     * @return RowActionItemDetail
+     */
     public function setRowActionItemDetail(string $name='__rowItemDetail', $title='Show detail'): RowActionItemDetail
     {
         return $this->rowActionItemDetail = new RowActionItemDetail($name, $title);

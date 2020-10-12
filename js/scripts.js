@@ -6,6 +6,7 @@
             selectAll();
             hideEditButtons();
             showEditButtons();
+            datagridSortable();
         });
     });
 });
@@ -82,3 +83,36 @@ function showEditButtons()
         });
     });
 }
+
+datagridSortable = function() {
+    if (typeof $.fn.sortable === 'undefined') {
+        return;
+    }
+    return $('.grid [data-sortable]').sortable({
+        handle: '.handle-sort',
+        items: 'tr',
+        axis: 'y',
+        update: function(event, ui) {
+            var component_prefix, data, item_id, next_id, prev_id, row, url;
+            row = ui.item.closest('tr[data-id]');
+            item_id = row.data('id');
+            prev_id = null;
+            next_id = null;
+            if (row.prev().length) {
+                prev_id = row.prev().data('id');
+            }
+            if (row.next().length) {
+                next_id = row.next().data('id');
+            }
+            url = $(this).data('sortable-url');
+            return openLinkAjax(url, {'itemId':item_id, 'prevId':prev_id, 'nextId':next_id});
+        },
+        helper: function(e, ui) {
+            ui.children().each(function() {
+                return $(this).width($(this).width());
+            });
+            return ui;
+        }
+    });
+};
+

@@ -20,7 +20,7 @@ class RowActionCancel extends RowAction
     {
         //add datagrid name data-attribute
         $this->setDataAttributes([
-            'datagrid-name'         => $this->datagrid->getName()
+            'datagrid-name'  => $this->datagrid->getName()
         ]);
 
         $button = parent::render($row, $primary);

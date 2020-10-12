@@ -89,6 +89,12 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var string Export file name */
     public string $exportFileName='export.csv';
 
+    /** @var bool Rows sortable */
+    protected bool $sortableRows=false;
+
+    /** @var string|null Link to sortable signal */
+    protected ?string $sortableHandler=null;
+
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
@@ -113,6 +119,30 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function getEditRowKey()
     {
         return $this->editRowKey;
+    }
+
+    /**
+     * Set rows sortable
+     * @param bool $sortable
+     * @return $this
+     */
+    public function setSortableRows(bool $sortable=true): self
+    {
+        $this->sortableRows = $sortable;
+        $this->getDocumentTemplate()->setSortableRows($sortable);
+        return $this;
+    }
+
+    /**
+     * Set sortable handler
+     * @param string|null $handler
+     * @return $this
+     */
+    public function setSortableHandler(?string $handler=null): self
+    {
+        $this->sortableHandler = $handler;
+        $this->getDocumentTemplate()->getTbodyTemplate()->setDataAttribute('sortable-url', $this->sortableHandler);
+        return $this;
     }
 
 
