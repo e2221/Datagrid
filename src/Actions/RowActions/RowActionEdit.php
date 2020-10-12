@@ -21,8 +21,8 @@ class RowActionEdit extends RowAction
     {
         //add datagrid name data-attribute
         $this->setDataAttributes([
-            'datagrid-name'         => $this->datagrid->getName(),
-            'datagrid-edit'         => sprintf('datagrid-edit-%s', $this->datagrid->getName())
+            'datagrid-name'     => $this->datagrid->getName(),
+            'datagrid-edit'     => $this->datagrid->getName()
         ]);
 
         //disabled non edit rows
