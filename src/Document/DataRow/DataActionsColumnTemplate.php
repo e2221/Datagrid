@@ -89,6 +89,22 @@ class DataActionsColumnTemplate extends BaseElement
         return $this->rowActionSave;
     }
 
+    /**
+     * Get sortable row button
+     * @return RowActionSortable|null
+     */
+    public function getRowActionSort(): ?RowActionSortable
+    {
+        return $this->rowActionSort;
+    }
 
+    /**
+     * is row sortable
+     * @return bool
+     */
+    public function isRowSortable(): bool
+    {
+        return $this->sortable;
+    }
 
 }

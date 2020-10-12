@@ -245,6 +245,10 @@
     {foreach $rowCustomActions as $actionName => $rowAction}
         {$rowAction->render($row, $primary)}
     {/foreach}
+
+    {if $dataActionsColumnTemplate->isRowSortable()}
+        {$dataActionsColumnTemplate->getRowActionSort()->render($row, primary)}
+    {/if}
 {/define}
 
 {* paginator *}
