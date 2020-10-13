@@ -7,6 +7,7 @@
             hideEditButtons();
             showEditButtons();
             datagridSortable();
+            datagridConnect();
         });
     });
 });
@@ -94,7 +95,7 @@ datagridSortable = function() {
         items: 'tr',
         axis: 'y',
         update: function(event, ui) {
-            var component_prefix, data, item_id, next_id, prev_id, row, url;
+            let data, item_id, next_id, prev_id, row, url;
             row = ui.item.closest('tr[data-id]');
             item_id = row.data('id');
             prev_id = null;
@@ -106,9 +107,9 @@ datagridSortable = function() {
                 next_id = row.next().data('id');
             }
             url = $(this).data('sortable-url');
-            let itemIdParam = $(this).data('itemidparam');
-            let prevIdParam = $(this).data('previdparam');
-            let nextIdParam = $(this).data('nextidparam');
+            let itemIdParam = $(this).data('itemIdParam');
+            let prevIdParam = $(this).data('prevIdParam');
+            let nextIdParam = $(this).data('nextIdParam');
             let getFields = {};
             getFields = {
                 [itemIdParam]: item_id,
@@ -126,3 +127,47 @@ datagridSortable = function() {
     });
 };
 
+datagridConnect = function() {
+    if (typeof $.fn.sortable === 'undefined') {
+        return;
+    }
+    return $('.grid [data-connect]').sortable({
+        handle: '.handle-sort',
+        items: 'tr',
+        axis: 'y',
+        connectWith: '.datagrid-connected-grids',
+        stop: function(event, ui) {
+            let data, item_id, next_id, prev_id, row, url, table_id;
+            row = ui.item.closest('tr[data-id]');
+            item_id = row.data('id');
+            prev_id = null;
+            next_id = null;
+            if (row.prev().length) {
+                prev_id = row.prev().data('id');
+            }
+            if (row.next().length) {
+                next_id = row.next().data('id');
+            }
+            url = $(this).data('connect-url');
+            table_id = row.parent().data('tableId')
+            let itemIdParam = $(this).data('itemIdParam');
+            let prevIdParam = $(this).data('prevIdParam');
+            let nextIdParam = $(this).data('nextIdParam');
+            let tableIdParam = $(this).data('connectTableIdParam');
+            let getFields = {};
+            getFields = {
+                [itemIdParam]: item_id,
+                [prevIdParam]: prev_id,
+                [nextIdParam]: next_id,
+                [tableIdParam]: table_id,
+            };
+            return openLinkAjax(url, 'GET', getFields);
+        },
+        helper: function(e, ui) {
+            ui.children().each(function() {
+                return $(this).width($(this).width());
+            });
+            return ui;
+        }
+    });
+};

@@ -71,8 +71,8 @@ class DocumentTemplate
     /** @var bool Rows sortable */
     protected bool $sortableRows=false;
 
-    /** @var string|null Link to sortable signal */
-    protected ?string $sortableHandler=null;
+    /** @var bool Rows connectable */
+    protected bool $connectableRows=false;
 
     public function __construct(Datagrid $datagrid)
     {
@@ -104,6 +104,18 @@ class DocumentTemplate
         $this->sortableRows = $sortable;
         $this->tbodyTemplate->setSortable($sortable);
         $this->dataRowTemplate->getDataActionsColumnTemplate()->setSortable($sortable);
+        return $this;
+    }
+
+    /**
+     * @param bool $connectable
+     * @return $this
+     */
+    public function setConnectableRows(bool $connectable=true): self
+    {
+        $this->connectableRows = $connectable;
+        $this->tbodyTemplate->setConnectable($connectable);
+        $this->dataRowTemplate->getDataActionsColumnTemplate()->setSortable($connectable);
         return $this;
     }
 

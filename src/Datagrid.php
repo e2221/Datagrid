@@ -91,9 +91,18 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /** @var bool Rows sortable */
     protected bool $sortableRows=false;
-    
+
     /** @var null|callable  */
     protected $sortCallback=null;
+
+    /** @var bool Rows connectable with other tables */
+    protected bool $connectableRows=false;
+
+    /** @var null|callable Rows connect with other table callback  */
+    protected $connectCallback=null;
+
+    /** @var null|int  */
+    protected ?int $keyId=null;
 
     public function __construct()
     {
@@ -122,6 +131,15 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * Key id - used for connecting more tables
+     * @return int|null
+     */
+    public function getKeyId(): ?int
+    {
+        return $this->keyId;
+    }
+
+    /**
      * Set rows sortable
      * @param bool $sortable
      * @return $this
@@ -145,6 +163,35 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->sortCallback = $callback;
         return $this;
     }
+
+    /**
+     * @param bool $connectable
+     * @param int|null $keyId
+     * @return $this
+     */
+    public function setConnectableRows(bool $connectable=true, ?int $keyId=null): self
+    {
+        $this->connectableRows = $connectable;
+        if($this->connectableRows === true)
+        {
+            $this->keyId = $keyId;
+            $this->getDocumentTemplate()
+                ->setConnectableRows($this->connectableRows);
+        }
+        return $this;
+    }
+
+    /**
+     * Set connect callback
+     * @param callable|null $connectCallback
+     * @return $this
+     */
+    public function setConnectCallback(?callable $connectCallback): self
+    {
+        $this->connectCallback = $connectCallback;
+        return $this;
+    }
+
 
 
     /**************************************************************************
@@ -440,6 +487,17 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         if(is_callable($this->sortCallback))
             call_user_func($this->sortCallback, $this, $itemId, $prevId, $nextId);
+    }
+
+    /**
+     * Rows connect in multiple tables
+     * @param int|null $itemId
+     * @param int|null $tableId
+     */
+    public function handleRowsConnect(?int $tableId=null, ?int $itemId=null, ?int $prevId=null, ?int $nextId=null): void
+    {
+        if(is_callable($this->connectCallback))
+            call_user_func($this->connectCallback, $this, $tableId, $itemId, $prevId, $nextId);
     }
 
     /**************************************************************************
