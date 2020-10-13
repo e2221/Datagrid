@@ -17,10 +17,10 @@ class DataRowTemplate extends BaseElement
     /** @var callable|null */
     protected $setAttributesCallback;
 
-    public function __construct(?string $elName = null, ?array $attributes = null, ?string $textContent = null, ?Datagrid $datagrid=null)
+    public function __construct(Datagrid $datagrid, ?string $elName = null, ?array $attributes = null, ?string $textContent = null)
     {
         $this->dataColumnTemplate = new DataColumnTemplate();
-        $this->dataActionsColumnTemplate = new DataActionsColumnTemplate(null, null, null, $datagrid);
+        $this->dataActionsColumnTemplate = new DataActionsColumnTemplate($datagrid);
         parent::__construct($elName, $attributes, $textContent);
     }
 

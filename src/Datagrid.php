@@ -125,11 +125,13 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * Set rows sortable
      * @param bool $sortable
      * @return $this
-     * @throws UI\InvalidLinkException
      */
     public function setSortableRows(bool $sortable=true): self
     {
         $this->sortableRows = $sortable;
+        if($this->sortableRows === true)
+            $this->getDocumentTemplate()
+                ->setSortableRows(true);
         return $this;
     }
 
@@ -475,12 +477,6 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
         if($this->paginator instanceof Paginator && !is_null($this->itemsPerPage))
             $this->paginator->itemsPerPage = $this->itemsPerPage;
-
-        if($this->sortableRows === true)
-            $this->getDocumentTemplate()
-                ->setSortableRows(true)
-                ->getTbodyTemplate()
-                ->setDataAttribute('sortable-url', $this->link('rowsSort!'));
 
         $this->template->customActions = $this->customActions;
         $this->template->rowCustomActions = $this->rowCustomActions;

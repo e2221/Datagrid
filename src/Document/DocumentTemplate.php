@@ -78,12 +78,12 @@ class DocumentTemplate
     {
         $this->datagrid = $datagrid;
         $this->theadTemplate = new TheadTemplate();
-        $this->tbodyTemplate = new TbodyTemplate();
+        $this->tbodyTemplate = new TbodyTemplate($datagrid);
         $this->tfootTemplate = new TfootTemplate();
         $this->titleRowTemplate = new TitleRowTemplate();
         $this->headRowTemplate = new HeadRowTemplate();
         $this->headFilterRowTemplate = new HeadFilterRowTemplate();
-        $this->dataRowTemplate = new DataRowTemplate(null, null, null, $datagrid);
+        $this->dataRowTemplate = new DataRowTemplate($datagrid);
         $this->itemDetailRow = new ItemDetailRow();
         $this->emptyDataTemplate = new EmptyDataTemplate();
     }

@@ -106,8 +106,16 @@ datagridSortable = function() {
                 next_id = row.next().data('id');
             }
             url = $(this).data('sortable-url');
-            alert(item_id + ' '+prev_id+' '+next_id);
-            return openLinkAjax(url, 'GET', {'itemId':item_id, 'prevId':prev_id, 'nextId':next_id});
+            let itemIdParam = $(this).data('itemidparam');
+            let prevIdParam = $(this).data('previdparam');
+            let nextIdParam = $(this).data('nextidparam');
+            let getFields = {};
+            getFields = {
+                [itemIdParam]: item_id,
+                [prevIdParam]: prev_id,
+                [nextIdParam]: next_id,
+            };
+            return openLinkAjax(url, 'GET', getFields);
         },
         helper: function(e, ui) {
             ui.children().each(function() {

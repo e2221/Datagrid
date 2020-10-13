@@ -25,7 +25,7 @@ class DataActionsColumnTemplate extends BaseElement
 
     protected bool $sortable=false;
 
-    public function __construct(?string $elName = null, ?array $attributes = null, ?string $textContent = null, ?Datagrid $datagrid=null)
+    public function __construct(Datagrid $datagrid, ?string $elName = null, ?array $attributes = null, ?string $textContent = null)
     {
         $this->datagrid = $datagrid;
         $this->rowActionEdit = new RowActionEdit('__edit', 'Edit', $this->datagrid);
