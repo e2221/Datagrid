@@ -49,7 +49,7 @@ class DataRowTemplate extends BaseElement
             }
         }
         $this->setAttribute('id', $rowID);
-        $this->setDataAttribute('id', (string)$row);
+        $this->setDataAttribute('id', (string)$primary);
         return parent::render();
     }
 

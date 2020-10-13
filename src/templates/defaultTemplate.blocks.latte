@@ -247,7 +247,7 @@
     {/foreach}
 
     {if $dataActionsColumnTemplate->isRowSortable()}
-        {$dataActionsColumnTemplate->getRowActionSort()->render($row, primary)}
+        {$dataActionsColumnTemplate->getRowActionSort()->render($row, $primary)}
     {/if}
 {/define}
 

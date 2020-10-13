@@ -107,7 +107,7 @@ datagridSortable = function() {
             }
             url = $(this).data('sortable-url');
             alert(item_id + ' '+prev_id+' '+next_id);
-            return openLinkAjax(url, {'itemId':item_id, 'prevId':prev_id, 'nextId':next_id});
+            return openLinkAjax(url, 'GET', {'itemId':item_id, 'prevId':prev_id, 'nextId':next_id});
         },
         helper: function(e, ui) {
             ui.children().each(function() {
