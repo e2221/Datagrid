@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace e2221\Datagrid\Document\DataRow;
 
 use e2221\Datagrid\Actions\RowActions\RowActionCancel;
+use e2221\Datagrid\Actions\RowActions\RowActionDraggable;
 use e2221\Datagrid\Actions\RowActions\RowActionEdit;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
 use e2221\Datagrid\Actions\RowActions\RowActionSave;
@@ -22,8 +23,10 @@ class DataActionsColumnTemplate extends BaseElement
     protected ?RowActionItemDetail $rowActionItemDetail=null;
     protected RowActionSave $rowActionSave;
     protected ?RowActionSortable $rowActionSort=null;
+    protected ?RowActionDraggable $rowActionDrag=null;
 
     protected bool $sortable=false;
+    protected bool $draggable=false;
 
     public function __construct(Datagrid $datagrid, ?string $elName = null, ?array $attributes = null, ?string $textContent = null)
     {
@@ -42,7 +45,16 @@ class DataActionsColumnTemplate extends BaseElement
     public function setSortable(bool $sortable=true): self
     {
         $this->sortable = $sortable;
-        $this->rowActionSort = new RowActionSortable('__sortable', 'Sort');
+        if($this->sortable)
+            $this->rowActionSort = new RowActionSortable('__sortable', 'Sort');
+        return $this;
+    }
+
+    public function setDraggable(bool $draggable): self
+    {
+        $this->draggable = $draggable;
+        if($this->draggable === true)
+            $this->rowActionDrag = new RowActionDraggable('__draggable', 'Drag');
         return $this;
     }
 
@@ -99,12 +111,26 @@ class DataActionsColumnTemplate extends BaseElement
     }
 
     /**
+     * Get draggable row button
+     * @return RowActionDraggable|null
+     */
+    public function getRowActionDrag(): ?RowActionDraggable
+    {
+        return $this->rowActionDrag;
+    }
+
+    /**
      * is row sortable
      * @return bool
      */
     public function isRowSortable(): bool
     {
         return $this->sortable;
+    }
+
+    public function isRowDraggable(): bool
+    {
+        return (bool)$this->rowActionDrag;
     }
 
 }

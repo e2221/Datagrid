@@ -8,6 +8,8 @@
             showEditButtons();
             datagridSortable();
             datagridConnect();
+            datagridDraggable();
+            datagridDropable();
         });
     });
 });
@@ -95,7 +97,7 @@ datagridSortable = function() {
         items: 'tr',
         axis: 'y',
         update: function(event, ui) {
-            let data, item_id, next_id, prev_id, row, url;
+            let item_id, next_id, prev_id, row, url;
             row = ui.item.closest('tr[data-id]');
             item_id = row.data('id');
             prev_id = null;
@@ -110,7 +112,7 @@ datagridSortable = function() {
             let itemIdParam = $(this).data('itemIdParam');
             let prevIdParam = $(this).data('prevIdParam');
             let nextIdParam = $(this).data('nextIdParam');
-            let getFields = {};
+            let getFields;
             getFields = {
                 [itemIdParam]: item_id,
                 [prevIdParam]: prev_id,
@@ -137,7 +139,7 @@ datagridConnect = function() {
         axis: 'y',
         connectWith: '.datagrid-connected-grids',
         stop: function(event, ui) {
-            let data, item_id, next_id, prev_id, row, url, table_id;
+            let item_id, next_id, prev_id, row, url, table_id;
             row = ui.item.closest('tr[data-id]');
             item_id = row.data('id');
             prev_id = null;
@@ -154,7 +156,7 @@ datagridConnect = function() {
             let prevIdParam = $(this).data('prevIdParam');
             let nextIdParam = $(this).data('nextIdParam');
             let tableIdParam = $(this).data('connectTableIdParam');
-            let getFields = {};
+            let getFields;
             getFields = {
                 [itemIdParam]: item_id,
                 [prevIdParam]: prev_id,
@@ -171,3 +173,72 @@ datagridConnect = function() {
         }
     });
 };
+
+datagridDraggable = function() {
+    if (typeof $.fn.draggable === 'undefined') {
+        return;
+    }
+    return $('.grid [data-draggable]').draggable({
+        handle: '.handle-drag',
+        scope: "datagrid-draggable-items",
+        revert: "invalid",
+        zIndex: 100,
+        helper: function(e, ui){
+            let helper, helperText;
+            helper=$(this);
+            helperText = helper.data('helper');
+            if(helperText)
+            {
+                return $("<div class='ui-widget-header'>"+helperText+"</div>");
+            }else{
+                return $(this).clone();
+            }
+        },
+        opacity: 0.8,
+        cursor: "move",
+        cursorAt: { top: 0, left: 0 },
+    });
+}
+
+datagridDropable = function(){
+    return $('.grid [data-droppable]').droppable({
+        scope: "datagrid-draggable-items",
+        drop: function(e, ui){
+            let $drop, parent, effect_class, $drag, url, itemIdParam, itemMovedParam;
+            $drop = $(this);
+            parent = $drop.parent();
+            effect_class = parent.data('effect')
+            url = parent.data('dropUrl');
+            itemIdParam = parent.data('itemIdParam');
+            itemMovedParam = parent.data('itemMovedParam');
+            if(effect_class){
+                $drop.removeClass(effect_class);
+            }
+            $drag = $(ui.draggable);
+            let getFields = {};
+            getFields = {
+                [itemIdParam]: $drag.data('id'),
+                [itemMovedParam]: $drop.data('id'),
+            };
+            return openLinkAjax(url, 'GET', getFields);
+        },
+        over: function (e, ui){
+            let $drop, effect, effect_class;
+            $drop = $(this);
+            effect = $drop.parent();
+            effect_class = effect.data('effect')
+            if(effect_class){
+                $drop.addClass(effect_class);
+            }
+        },
+        out: function (e, ui){
+            let $drop, effect, effect_class;
+            $drop = $(this);
+            effect = $drop.parent();
+            effect_class = effect.data('effect')
+            if(effect_class){
+                $drop.removeClass(effect_class);
+            }
+        },
+    });
+}

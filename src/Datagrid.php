@@ -104,6 +104,18 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var null|int  */
     protected ?int $keyId=null;
 
+    /** @var bool Rows draggable */
+    protected bool $draggable=false;
+
+    /** @var bool Rows droppable */
+    protected bool $droppable=false;
+
+    /** @var null|callable */
+    protected $dragAndDropCallback=null;
+
+    /** @var null|callable Drag-helper text callback  */
+    protected $dragHelperCallback=null;
+
     public function __construct()
     {
         $this->uniqueHash = Random::generate(5, 'a-z');
@@ -192,6 +204,58 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         return $this;
     }
 
+    /**
+     * Set rows draggable
+     * @param bool $draggable
+     * @return $this
+     */
+    public function setDraggable(bool $draggable=true, string $scope='datagrid-draggable-items'): self
+    {
+        $this->documentTemplate->setDraggableRows($draggable, $scope);
+        return $this;
+    }
+
+    /**
+     * Set rows dropable
+     * @param bool $dropable
+     * @return $this
+     */
+    public function setDroppable(bool $dropable=true, string $dropEffectClass='', string $scope='datagrid-draggable-items'): self
+    {
+        $this->documentTemplate->setDroppableRows($dropable, $dropEffectClass, $scope);
+        return $this;
+    }
+
+    /**
+     * Set drag and drop callback
+     * @param callable|null $callback
+     * @return $this
+     */
+    public function setDragAndDropCallback(?callable $callback): self
+    {
+        $this->dragAndDropCallback = $callback;
+        return $this;
+    }
+
+    /**
+     * Set drag helper text callback
+     * @param callable|null $callback
+     * @return $this
+     */
+    public function setDragHelperCallback(?callable $callback): self
+    {
+        $this->dragHelperCallback = $callback;
+        return $this;
+    }
+
+    /**
+     * Get drag helper callback
+     * @return callable|null
+     */
+    public function getDragHelperCallback(): ?callable
+    {
+        return $this->dragHelperCallback;
+    }
 
 
     /**************************************************************************
@@ -497,7 +561,18 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function handleRowsConnect(?int $tableId=null, ?int $itemId=null, ?int $prevId=null, ?int $nextId=null): void
     {
         if(is_callable($this->connectCallback))
-            call_user_func($this->connectCallback, $this, $tableId, $itemId, $prevId, $nextId);
+            call_user_func($this->connectCallback, $this, $itemId, $tableId, $prevId, $nextId);
+    }
+
+    /**
+     * Drop handler
+     * @param int|null $itemId
+     * @param int|null $movedToId
+     */
+    public function handleDrop(?int $itemId=null, ?int $movedToId=null): void
+    {
+        if(is_callable($this->dragAndDropCallback))
+            call_user_func($this->dragAndDropCallback, $this, $itemId, $movedToId);
     }
 
     /**************************************************************************

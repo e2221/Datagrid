@@ -74,6 +74,12 @@ class DocumentTemplate
     /** @var bool Rows connectable */
     protected bool $connectableRows=false;
 
+    /** @var bool Rows draggable */
+    protected bool $draggableRows=false;
+
+    /** @var bool Rows droppable */
+    protected bool $droppableRows=false;
+
     public function __construct(Datagrid $datagrid)
     {
         $this->datagrid = $datagrid;
@@ -116,6 +122,35 @@ class DocumentTemplate
         $this->connectableRows = $connectable;
         $this->tbodyTemplate->setConnectable($connectable);
         $this->dataRowTemplate->getDataActionsColumnTemplate()->setSortable($connectable);
+        return $this;
+    }
+
+    public function setDraggableRows(bool $draggable, string $scope): self
+    {
+        $this->draggableRows = $draggable;
+        if($this->draggableRows)
+        {
+            $this->tbodyTemplate->setDraggable($draggable, $scope);
+            $this->dataRowTemplate->setDraggable($draggable);
+        }
+        return $this;
+    }
+
+    /**
+     * Set droppable rows
+     * @param bool $dropable
+     * @param string $droppableEffectClass
+     * @param string $scope
+     * @return $this
+     */
+    public function setDroppableRows(bool $dropable, string $droppableEffectClass, string $scope): self
+    {
+        $this->droppableRows = $dropable;
+        if($this->droppableRows)
+        {
+            $this->tbodyTemplate->setDroppable($dropable, $droppableEffectClass);
+            $this->dataRowTemplate->setDroppable($dropable, $scope);
+        }
         return $this;
     }
 

@@ -10,6 +10,8 @@ class TbodyTemplate extends BaseElement
 {
     protected bool $sortable=false;
     protected bool $connectable=false;
+    protected bool $droppable=false;
+    protected bool $draggable=false;
     protected ?string $elName = 'tbody';
     private Datagrid $datagrid;
 
@@ -26,6 +28,49 @@ class TbodyTemplate extends BaseElement
     public function isSortable(): bool
     {
         return $this->sortable;
+    }
+
+    /**
+     * Set rows droppable
+     * @param bool $droppable
+     * @param string $effectClass
+     * @param string $scope
+     * @return $this
+     */
+    public function setDroppable(bool $droppable, string $effectClass=''): self
+    {
+        $this->droppable = $droppable;
+        if($this->droppable)
+        {
+            $this->datagrid->onAnchor[] = function () use($effectClass){
+                if(!empty($effectClass))
+                    $this->setDataAttribute('effect', $effectClass);
+                $this->setDataAttribute('drop-url', $this->datagrid->link('drop!'));
+                $this->setDataAttribute('item-id-param', sprintf('%s-itemId', $this->datagrid->getUniqueId()));
+                $this->setDataAttribute('item-moved-param', sprintf('%s-movedToId', $this->datagrid->getUniqueId()));
+            };
+        }
+        return $this;
+    }
+
+    /**
+     * Set rows draggable
+     * @param bool $draggable
+     * @param string $scope
+     * @return $this
+     */
+    public function setDraggable(bool $draggable, string $scope='datagrid-draggable-items'): self
+    {
+        $this->draggable = $draggable;
+        if($this->draggable)
+        {
+            $this->datagrid->onAnchor[] = function () use($scope){
+                $this->addClass('ui-draggable');
+                $this->setDataAttribute('scope', $scope);
+            };
+        }
+
+        return $this;
     }
 
     /**
