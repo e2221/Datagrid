@@ -550,18 +550,20 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function handleRowsSort(?int $itemId=null, ?int $prevId=null, ?int $nextId=null): void
     {
         if(is_callable($this->sortCallback))
-            call_user_func($this->sortCallback, $this, $itemId, $prevId, $nextId);
+            call_user_func($this->sortCallback, $itemId, $prevId, $nextId, $this);
     }
 
     /**
      * Rows connect in multiple tables
-     * @param int|null $itemId
      * @param int|null $tableId
+     * @param int|null $itemId
+     * @param int|null $prevId
+     * @param int|null $nextId
      */
     public function handleRowsConnect(?int $tableId=null, ?int $itemId=null, ?int $prevId=null, ?int $nextId=null): void
     {
         if(is_callable($this->connectCallback))
-            call_user_func($this->connectCallback, $this, $itemId, $tableId, $prevId, $nextId);
+            call_user_func($this->connectCallback, $itemId, $tableId, $prevId, $nextId, $this);
     }
 
     /**
@@ -572,7 +574,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     public function handleDrop(?int $itemId=null, ?int $movedToId=null): void
     {
         if(is_callable($this->dragAndDropCallback))
-            call_user_func($this->dragAndDropCallback, $this, $itemId, $movedToId);
+            call_user_func($this->dragAndDropCallback, $itemId, $movedToId, $this);
     }
 
     /**************************************************************************
