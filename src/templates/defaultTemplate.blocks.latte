@@ -3,18 +3,18 @@
 {* table-open-tag *}
 {define table-open-tag}
     {if $documentTemplate->responsive}<div class="table-responsive">{/if}
-        <table class="{$documentTemplate->tableClass}{$documentTemplate->hover ? ' table-hover'}{$documentTemplate->borderless ? ' table-borderless'}{$documentTemplate->stripped ? ' table-striped'}{$documentTemplate->border ? ' table-bordered'}{$documentTemplate->addClass ? ' ' . implode(' ', $documentTemplate->addClass)}"
+    <table class="{$documentTemplate->tableClass}{$documentTemplate->hover ? ' table-hover'}{$documentTemplate->borderless ? ' table-borderless'}{$documentTemplate->stripped ? ' table-striped'}{$documentTemplate->border ? ' table-bordered'}{$documentTemplate->addClass ? ' ' . implode(' ', $documentTemplate->addClass)}"
             {ifset $documentTemplate->attributes}
                 {foreach $documentTemplate->attributes as $attribute => $value}
-                     {$attribute="$value"}
+                    {$attribute="$value"}
                 {/foreach}
             {/ifset}
-        >
-{/define}
+    >
+        {/define}
 
-{* table close *}
-{define table-close-tag}
-        </table>
+        {* table close *}
+        {define table-close-tag}
+    </table>
     {if $documentTemplate->responsive}</div>{/if}
 {/define}
 
@@ -26,39 +26,39 @@
     {if !$documentTemplate->hideTableHeader}
         {$headRowTemplate->renderStartTag()|noescape}
         {*}<tr class="grid-columns">{*}
-            {ifset $form[actions]}
-                {$headColumnTemplate->renderStartTag('global-actions')|noescape}
-                {*}<th class="grid-col-global-actions">{*}
-                    <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" title="Select All">
-                {*}</th>{*}
-                {$headColumnTemplate->renderEndTag()|noescape}
-            {/ifset}
-            {foreach $columns as $column}
-                {continueIf $column->isHidden()}
-                {$headColumnTemplate->renderStartTag($column->name)|noescape}
-                {*}<th class="grid-col-{$column->name}">{*}
-                    {if $column->canSort()}
-                        <a href="{link sort! orderColumn => $column->name, orderType => $column->getNewState()}" class="ajax">{$column->label}</a>
-                        {if $column->isAsc()}
-                            <span class="grid-sort-symbol grid-sort-symbol-asc"><em>&#9650;</em></span>
-                        {elseif $column->isDesc()}
-                            <span class="grid-sort-symbol grid-sort-symbol-desc"><em>&#9660;</em></span>
-                        {else}
-                            <span class="grid-sort-symbol grid-sort-symbol-no"></span>
-                        {/if}
-                    {else}
-                        {$column->label}
-                    {/if}
-                {*}</th>{*}
-                {$headColumnTemplate->renderEndTag()|noescape}
-            {/foreach}
-            {if $shouldHaveActions}
-                {$headActionsColumnTemplate->renderStartTag()|noescape}
-                    {*}<th class="grid-col-actions">{*}
-                        {include #global-custom-actions}
-                    {*}</th>{*}
-                {$headActionsColumnTemplate->renderEndTag()|noescape}
+        {ifset $form[actions]}
+            {$headColumnTemplate->renderStartTag('global-actions')|noescape}
+            {*}<th class="grid-col-global-actions">{*}
+            <input type="checkbox" data-name="{$uniqueHash}" class="datagrid-select-all" title="Select All">
+            {*}</th>{*}
+            {$headColumnTemplate->renderEndTag()|noescape}
+        {/ifset}
+        {foreach $columns as $column}
+            {continueIf $column->isHidden()}
+            {$headColumnTemplate->renderStartTag($column->name)|noescape}
+            {*}<th class="grid-col-{$column->name}">{*}
+            {if $column->canSort()}
+                <a href="{link sort! orderColumn => $column->name, orderType => $column->getNewState()}" class="ajax">{$column->label}</a>
+                {if $column->isAsc()}
+                    <span class="grid-sort-symbol grid-sort-symbol-asc"><em>&#9650;</em></span>
+                {elseif $column->isDesc()}
+                    <span class="grid-sort-symbol grid-sort-symbol-desc"><em>&#9660;</em></span>
+                {else}
+                    <span class="grid-sort-symbol grid-sort-symbol-no"></span>
+                {/if}
+            {else}
+                {$column->label}
             {/if}
+            {*}</th>{*}
+            {$headColumnTemplate->renderEndTag()|noescape}
+        {/foreach}
+        {if $shouldHaveActions}
+            {$headActionsColumnTemplate->renderStartTag()|noescape}
+            {*}<th class="grid-col-actions">{*}
+            {include #global-custom-actions}
+            {*}</th>{*}
+            {$headActionsColumnTemplate->renderEndTag()|noescape}
+        {/if}
         {*}</tr>{*}
         {$headRowTemplate->renderEndTag()|noescape}
     {/if}
@@ -73,31 +73,31 @@
     {if $isFilterable}
         {$headFilterRowTemplate->renderStartTag()|noescape}
         {*}<tr class="grid-filters">{*}
-            {ifset $form[actions]}
-                {$headFilterColumnTemplate->render('global-actions')}
-                {*}<th class="grid-col-global-actions"></th>{*}
-            {/ifset}
-            {formContainer filter}
-                {foreach $columns as $column}
-                    {continueIf $column->isHidden()}
-                    {$headFilterColumnTemplate->renderStartTag($column->name)|noescape}
-                    {*}<th class="grid-col-{$column->name}">{*}
-                        {if isset($form['filter'][$column->name]) && $column->isFilterable()}
-                            {ifset #col-filter-{$column->name}}
-                                {include #"col-filter-{$column->name}" column => $column}
-                            {else}
-                                {include #col-filter column => $column}
-                            {/ifset}
-                        {/if}
-                    {*}</th>{*}
-                    {$headFilterColumnTemplate->renderEndTag()|noescape}
-                {/foreach}
-                {$headFilterActionsColumnTemplate->renderStartTag()|noescape}
-                {*}<th class="grid-col-actions">{*}
-                    {include #global-filter-actions showCancel => $showFilterCancel}
+        {ifset $form[actions]}
+            {$headFilterColumnTemplate->render('global-actions')}
+            {*}<th class="grid-col-global-actions"></th>{*}
+        {/ifset}
+        {formContainer filter}
+            {foreach $columns as $column}
+                {continueIf $column->isHidden()}
+                {$headFilterColumnTemplate->renderStartTag($column->name)|noescape}
+                {*}<th class="grid-col-{$column->name}">{*}
+                {if isset($form['filter'][$column->name]) && $column->isFilterable()}
+                    {ifset #col-filter-{$column->name}}
+                        {include #"col-filter-{$column->name}" column => $column}
+                    {else}
+                        {include #col-filter column => $column}
+                    {/ifset}
+                {/if}
                 {*}</th>{*}
-                {$headFilterActionsColumnTemplate->renderEndTag()|noescape}
-            {/formContainer}
+                {$headFilterColumnTemplate->renderEndTag()|noescape}
+            {/foreach}
+            {$headFilterActionsColumnTemplate->renderStartTag()|noescape}
+            {*}<th class="grid-col-actions">{*}
+            {include #global-filter-actions showCancel => $showFilterCancel}
+            {*}</th>{*}
+            {$headFilterActionsColumnTemplate->renderEndTag()|noescape}
+        {/formContainer}
         {*}</tr>{*}
         {$headFilterRowTemplate->renderEndTag()|noescape}
     {/if}
@@ -110,7 +110,7 @@
 {define row}
     {$dataRowTemplate->renderStartTag($rowId, $primary, $row)|noescape}
     {*}<tr id={$rowId}>{*}
-        {include #row-inner row => $row}
+    {include #row-inner row => $row}
     {*}</tr>{*}
     {$dataRowTemplate->renderEndTag()|noescape}
 
@@ -136,9 +136,9 @@
     {ifset $form[actions]}
         {$dataColumnTemplate->renderStartTag('global-actions')|noescape}
         {*}<td class="grid-col-global-actions">{*}
-            {formContainer actions}
-                {input items:$primary class => $uniqueHash}
-            {/formContainer}
+        {formContainer actions}
+            {input items:$primary class => $uniqueHash}
+        {/formContainer}
         {$dataColumnTemplate->renderEndTag()|noescape}
         {*}</td>{*}
     {/ifset}
@@ -148,16 +148,16 @@
         {if $editRow && $column->name != $rowPrimaryKey && (isset($form['edit'][$column->name]) || isset($this->blockQueue["cell-edit-{$column->name}"]))}
             {$dataColumnTemplate->renderStartTag($column->name)|noescape}
             {*}<td class="grid-col-{$column->name}">{*}
-                {ifset #cell-edit-$column->name}
-                    {include #"cell-edit-{$column->name}" form => $form, column => $column, row => $row}
-                {else}
-                    {formContainer edit}
-                        {input $column->name}
-                        {if $form[edit][$column->name]->hasErrors()}
-                            <p class="error" n:foreach="$form[edit][$column->name]->getErrors() as $error">{$error}</p>
-                        {/if}
-                    {/formContainer}
-                {/ifset}
+            {ifset #cell-edit-$column->name}
+                {include #"cell-edit-{$column->name}" form => $form, column => $column, row => $row}
+            {else}
+                {formContainer edit}
+                    {input $column->name}
+                    {if $form[edit][$column->name]->hasErrors()}
+                        <p class="error" n:foreach="$form[edit][$column->name]->getErrors() as $error">{$error}</p>
+                    {/if}
+                {/formContainer}
+            {/ifset}
             {*}</td>{*}
             {$dataColumnTemplate->renderEndTag()|noescape}
         {else}
@@ -166,11 +166,11 @@
             {else}
                 {$dataColumnTemplate->renderStartTag('grid-col-' . $column->name, $primary, $row, $cell)|noescape}
                 {*}<td class="grid-col-{$column->name}">{*}
-                    {ifset #cell-$column->name}
-                        {include #"cell-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
-                    {else}
-                        {$column->render($row, $primary, $cell)}
-                    {/ifset}
+                {ifset #cell-$column->name}
+                    {include #"cell-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
+                {else}
+                    {$column->render($row, $primary, $cell)}
+                {/ifset}
                 {*}</td>{*}
                 {$dataColumnTemplate->renderEndTag()|noescape}
             {/ifset}
@@ -180,18 +180,18 @@
     {if $shouldHaveActions}
         {$dataActionsColumnTemplate->renderStartTag()|noescape}
         {*}<td class="grid-col-actions">{*}
-            {if $editRow}
-                {formContainer edit}
-                    {input $rowPrimaryKey class => 'grid-primary-value'}
-                    {include #row-actions-edit row => $row, primary => $primary}
-                {/formContainer}
+        {if $editRow}
+            {formContainer edit}
+                {input $rowPrimaryKey class => 'grid-primary-value'}
+                {include #row-actions-edit row => $row, primary => $primary}
+            {/formContainer}
+        {else}
+            {ifset #row-actions}
+                {include #row-actions row => $row, primary => $primary}
             {else}
-                {ifset #row-actions}
-                    {include #row-actions row => $row, primary => $primary}
-                {else}
-                    {include #row-actions-generated row => $row, primary => $primary}
-                {/ifset}
-            {/if}
+                {include #row-actions-generated row => $row, primary => $primary}
+            {/ifset}
+        {/if}
         {*}</td>{*}
         {$dataActionsColumnTemplate->renderEndTag()|noescape}
     {/if}
@@ -249,6 +249,9 @@
     {if $dataActionsColumnTemplate->isRowSortable()}
         {$dataActionsColumnTemplate->getRowActionSort()->render($row, $primary)}
     {/if}
+    {if $dataActionsColumnTemplate->isRowDraggable()}
+        {$dataActionsColumnTemplate->getRowActionDrag()->render($row, $primary)}
+    {/if}
 {/define}
 
 {* paginator *}
@@ -302,14 +305,14 @@ BLOCKS ADDED
 {define row-item-detail-tr}
     {$itemDetailRowTemplate->renderStartTag($itemDetailId, $primary, $row)|noescape}
     {*}<tr id="{$itemDetailId}" class="collapse">{*}
-        {$itemDetailColumnTemplate->renderStartTag($colspan, $primary, $row)|noescape}
-        {*}<td colspan="{$colspan}">{*}
-            {ifset #row-item-detail}
-                {include #row-item-detail row => $row, primary => $primary}
-            {else}
-                {$dataActionsColumnTemplate->getRowActionItemDetail()->renderContent($row, $primary)}
-            {/ifset}
-        {*}</td>{*}
+    {$itemDetailColumnTemplate->renderStartTag($colspan, $primary, $row)|noescape}
+    {*}<td colspan="{$colspan}">{*}
+    {ifset #row-item-detail}
+        {include #row-item-detail row => $row, primary => $primary}
+    {else}
+        {$dataActionsColumnTemplate->getRowActionItemDetail()->renderContent($row, $primary)}
+    {/ifset}
+    {*}</td>{*}
     {*}</tr>{*}
     {$itemDetailRowTemplate->renderEndTag()|noescape}
 {/define}
@@ -317,19 +320,19 @@ BLOCKS ADDED
 {define multiple-filter}
     {if $hasMultipleFilter}
         {$multipleFilterTemplate->renderStartTag()|noescape}
-            <div class="input-group input-group-sm">
-                {formContainer filterMultiple}
-                    {foreach $columns as $column}
-                        {continueIf $column->isHidden()}
-                        {continueIf !$column->isMultipleFilterable()}
-                        {if isset($form['filterMultiple'][$column->name])}
-                            {input $column->name autofocus=>'true'}
-                        {/if}
-                    {/foreach}
-                    <button type="submit" n:name="filterMultiple" class="btn btn-sm btn-outline-primary" title="Filter"><i class="fas fa-search"></i></button>
-                    <button n:if="$showMultipleCancel" type="submit" n:name="cancelMultiple" class="btn btn-sm btn-outline-warning" title="Cancel"><i class="fas fa-times"></i></button>
-                {/formContainer}
-            </div>
+        <div class="input-group input-group-sm">
+            {formContainer filterMultiple}
+                {foreach $columns as $column}
+                    {continueIf $column->isHidden()}
+                    {continueIf !$column->isMultipleFilterable()}
+                    {if isset($form['filterMultiple'][$column->name])}
+                        {input $column->name autofocus=>'true'}
+                    {/if}
+                {/foreach}
+                <button type="submit" n:name="filterMultiple" class="btn btn-sm btn-outline-primary" title="Filter"><i class="fas fa-search"></i></button>
+                <button n:if="$showMultipleCancel" type="submit" n:name="cancelMultiple" class="btn btn-sm btn-outline-warning" title="Cancel"><i class="fas fa-times"></i></button>
+            {/formContainer}
+        </div>
         {$multipleFilterTemplate->renderEndTag()|noescape}
     {/if}
 {/define}
@@ -351,12 +354,12 @@ BLOCKS ADDED
 *}
 {define table-title-tr}
     {$titleRowTemplate->renderStartTag()|noescape}
-        {$titleColumnTemplate->renderStartTag($colspan)|noescape}
-            <div class="row">
-                {include #grid-title}
-                {include #multiple-filter}
-            </div>
-        {$titleColumnTemplate->renderEndTag()|noescape}
+    {$titleColumnTemplate->renderStartTag($colspan)|noescape}
+    <div class="row">
+        {include #grid-title}
+        {include #multiple-filter}
+    </div>
+    {$titleColumnTemplate->renderEndTag()|noescape}
     {$titleRowTemplate->renderEndTag()|noescape}
 {/define}
 
