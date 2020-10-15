@@ -19,7 +19,9 @@ class GridTemplate extends BaseElement
     {
         parent::__construct($elName, $attributes);
         $this->datagrid = $datagrid;
-        $this->setDataAttribute('grid-name', $this->datagrid->getUniqueId());
+        $datagrid->onAnchor[] = function (){
+            $this->setDataAttribute('grid-name', $this->datagrid->getUniqueId());
+        };
     }
 
     /**
