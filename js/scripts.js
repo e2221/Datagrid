@@ -182,7 +182,7 @@ datagridDraggable = function() {
         handle: '.handle-drag',
         scope: "datagrid-draggable-items",
         revert: "invalid",
-        zIndex: 100,
+        zIndex: 2000,
         helper: function(e, ui){
             let helper, helperText;
             helper=$(this);
