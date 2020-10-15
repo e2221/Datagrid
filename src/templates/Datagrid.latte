@@ -1,6 +1,7 @@
 {templateType e2221\Datagrid\DatagridTemplate}
 
-<div class="grid" data-grid-name="{$control->getUniqueId()}">
+{*}<div class="grid" data-grid-name="{$control->getUniqueId()}">{*}
+{$gridTemplate->renderStartTag()|noescape}
     {snippet rows}
 
         {*  TEMPLATES
@@ -134,4 +135,5 @@
         {/form}
 
     {/snippet}
-</div>
+{*}</div>{*}
+{$gridTemplate->renderEndTag()|noescape}

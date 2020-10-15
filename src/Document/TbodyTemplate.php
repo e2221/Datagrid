@@ -34,7 +34,6 @@ class TbodyTemplate extends BaseElement
      * Set rows droppable
      * @param bool $droppable
      * @param string $effectClass
-     * @param string $scope
      * @return $this
      */
     public function setDroppable(bool $droppable, string $effectClass=''): self

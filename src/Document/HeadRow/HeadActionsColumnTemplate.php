@@ -31,11 +31,14 @@ class HeadActionsColumnTemplate extends BaseElement
     /**
      * Sets column sticky top
      * @param bool $sticky
+     * @param int|null $topPosition
      * @return HeadActionsColumnTemplate
      */
-    public function setStickyTop(bool $sticky=true): HeadActionsColumnTemplate
+    public function setStickyTop(bool $sticky=true, ?int $topPosition=null): self
     {
         $this->stickyTop = $sticky;
+        if($this->stickyTop === false && is_numeric($topPosition))
+            $this->setAttribute('style', sprintf('top:%spx', $topPosition));
         return $this;
     }
 

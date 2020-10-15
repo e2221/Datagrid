@@ -20,6 +20,7 @@ use e2221\Datagrid\Document\DataRow\DataColumnTemplate;
 use e2221\Datagrid\Document\DataRow\DataRowTemplate;
 use e2221\Datagrid\Document\DocumentTemplate;
 use e2221\Datagrid\Document\EmptyDataTemplate;
+use e2221\Datagrid\Document\GridTemplate;
 use e2221\Datagrid\Document\HeadFilterRow\HeadFilterActionsColumnTemplate;
 use e2221\Datagrid\Document\HeadFilterRow\HeadFilterColumnTemplate;
 use e2221\Datagrid\Document\HeadFilterRow\HeadFilterRowTemplate;
@@ -629,6 +630,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->tbodyTemplate = $this->documentTemplate->getTbodyTemplate();
         $this->template->tfootTemplate = $this->documentTemplate->getTfootTemplate();
         $this->template->emptyDataTemplate = $this->documentTemplate->getEmptyDataTemplate();
+        $this->template->gridTemplate = $this->documentTemplate->getGridTemplate();
         //title Row Parts
         $titleRowTemplate = $this->documentTemplate->getTitleRowTemplate();
         $this->template->titleRowTemplate = $titleRowTemplate;
@@ -1132,4 +1134,5 @@ class DatagridTemplate extends Template
     public ItemDetailRow $itemDetailRowTemplate;
     public ItemDetailColumn $itemDetailColumnTemplate;
     public EmptyDataTemplate $emptyDataTemplate;
+    public GridTemplate $gridTemplate;
 }

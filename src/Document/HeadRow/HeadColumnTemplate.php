@@ -38,7 +38,7 @@ class HeadColumnTemplate extends BaseElement
             $attrs = call_user_func($this->attributesCallback, $columnName);
             if(is_array($attrs)){
                 foreach ($attrs as $attr => $value) {
-                    $this->attributes[$attrs] = $value;
+                    $this->attributes[$attr] = $value;
                 }
             }
         }
@@ -60,11 +60,14 @@ class HeadColumnTemplate extends BaseElement
     /**
      * Sets column sticky top
      * @param bool $sticky
+     * @param int|null $topPosition
      * @return $this
      */
-    public function setStickyTop(bool $sticky=true): HeadColumnTemplate
+    public function setStickyTop(bool $sticky=true, ?int $topPosition=null): self
     {
         $this->stickyTop = $sticky;
+        if($this->stickyTop === true && is_numeric($topPosition))
+            $this->setAttribute('style', sprintf('top:%spx', $topPosition));
         return $this;
     }
 }

@@ -80,6 +80,9 @@ class DocumentTemplate
     /** @var bool Rows droppable */
     protected bool $droppableRows=false;
 
+    /** @var GridTemplate Grid template */
+    protected GridTemplate $gridTemplate;
+
     public function __construct(Datagrid $datagrid)
     {
         $this->datagrid = $datagrid;
@@ -92,6 +95,7 @@ class DocumentTemplate
         $this->dataRowTemplate = new DataRowTemplate($datagrid);
         $this->itemDetailRow = new ItemDetailRow();
         $this->emptyDataTemplate = new EmptyDataTemplate();
+        $this->gridTemplate = new GridTemplate($datagrid);
     }
 
     /**************************************************************************
@@ -114,6 +118,7 @@ class DocumentTemplate
     }
 
     /**
+     * Set connectable rows
      * @param bool $connectable
      * @return $this
      */
@@ -125,6 +130,12 @@ class DocumentTemplate
         return $this;
     }
 
+    /**
+     * Set draggable rows
+     * @param bool $draggable
+     * @param string $scope
+     * @return $this
+     */
     public function setDraggableRows(bool $draggable, string $scope): self
     {
         $this->draggableRows = $draggable;
@@ -138,19 +149,44 @@ class DocumentTemplate
 
     /**
      * Set droppable rows
-     * @param bool $dropable
+     * @param bool $droppable
      * @param string $droppableEffectClass
      * @param string $scope
      * @return $this
      */
-    public function setDroppableRows(bool $dropable, string $droppableEffectClass, string $scope): self
+    public function setDroppableRows(bool $droppable, string $droppableEffectClass, string $scope): self
     {
-        $this->droppableRows = $dropable;
+        $this->droppableRows = $droppable;
         if($this->droppableRows)
         {
-            $this->tbodyTemplate->setDroppable($dropable, $droppableEffectClass);
-            $this->dataRowTemplate->setDroppable($dropable, $scope);
+            $this->tbodyTemplate->setDroppable($droppable, $droppableEffectClass);
+            $this->dataRowTemplate->setDroppable($droppable, $scope);
         }
+        return $this;
+    }
+
+    /**
+     * Set sticky all grid
+     * @param bool $sticky
+     * @return $this
+     */
+    public function setGridSticky(bool $sticky=true, ?int $stickyTopPosition=null): self
+    {
+        $this->gridTemplate->setGridSticky($sticky, $stickyTopPosition);
+        return $this;
+    }
+
+    /**
+     * Set header sticky
+     * @param bool $headerSticky
+     * @param bool $headerActionsSticky
+     * @param int|null $stickyTopPosition
+     * @return $this
+     */
+    public function setHeaderSticky(bool $headerSticky=true, bool $headerActionsSticky=false, ?int $stickyTopPosition=null): self
+    {
+        $this->getHeadRowTemplate()->getColumnHeadTemplate()->setStickyTop($headerSticky, $stickyTopPosition);
+        $this->getHeadRowTemplate()->getColumnActionsHeadTemplate()->setStickyTop($headerActionsSticky, $stickyTopPosition);
         return $this;
     }
 
@@ -161,6 +197,15 @@ class DocumentTemplate
      * Template getters
      *
      ***************************************************************************/
+
+    /**
+     * Get grid template <div>
+     * @return GridTemplate
+     */
+    public function getGridTemplate(): GridTemplate
+    {
+        return $this->gridTemplate;
+    }
 
     /**
      * Get thead template <thead>
