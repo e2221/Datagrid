@@ -33,7 +33,7 @@ class DataActionsColumnTemplate extends BaseElement
         $this->datagrid = $datagrid;
         $this->rowActionEdit = new RowActionEdit('__edit', 'Edit', $this->datagrid);
         $this->rowActionCancel = new RowActionCancel('__cancel', 'Cancel', $this->datagrid);
-        $this->rowActionSave = new RowActionSave('__save', 'Save');
+        $this->rowActionSave = new RowActionSave('__save', 'Save', $this->datagrid);
         parent::__construct($elName, $attributes, $textContent);
     }
 
