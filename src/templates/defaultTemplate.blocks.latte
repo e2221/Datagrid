@@ -249,6 +249,9 @@
     {if $dataActionsColumnTemplate->isRowSortable()}
         {$dataActionsColumnTemplate->getRowActionSort()->render($row, $primary)}
     {/if}
+    {if $dataActionsColumnTemplate->isRowConnectable()}
+        {$dataActionsColumnTemplate->getRowActionConnect()->render($row, $primary)}
+    {/if}
     {if $dataActionsColumnTemplate->isRowDraggable()}
         {$dataActionsColumnTemplate->getRowActionDrag()->render($row, $primary)}
     {/if}

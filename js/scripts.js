@@ -95,7 +95,6 @@ datagridSortable = function() {
     return $('.grid [data-sortable]').sortable({
         handle: '.handle-sort',
         items: 'tr',
-        axis: 'y',
         update: function(event, ui) {
             let item_id, next_id, prev_id, row, url;
             row = ui.item.closest('tr[data-id]');
@@ -134,11 +133,10 @@ datagridConnect = function() {
         return;
     }
     return $('.grid [data-connect]').sortable({
-        handle: '.handle-sort',
+        handle: '.handle-connect',
         items: 'tr',
-        axis: 'y',
         connectWith: '.datagrid-connected-grids',
-        stop: function(event, ui) {
+        receive: function(event, ui) {
             let item_id, next_id, prev_id, row, url, table_id;
             row = ui.item.closest('tr[data-id]');
             item_id = row.data('id');

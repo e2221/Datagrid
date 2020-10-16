@@ -17,6 +17,7 @@ class RowActionDraggable extends RowAction
         if(is_null($button))
             return null;
         $button->setName('a');
+        $button->href('#');
         return $button;
     }
 

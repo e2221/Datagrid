@@ -102,8 +102,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /** @var null|callable Rows connect with other table callback  */
     protected $connectCallback=null;
 
-    /** @var null|int  */
-    protected ?int $keyId=null;
+    /** @var int */
+    protected int $keyId=1;
 
     /** @var bool Rows draggable */
     protected bool $draggable=false;
@@ -147,7 +147,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      * Key id - used for connecting more tables
      * @return int|null
      */
-    public function getKeyId(): ?int
+    public function getKeyId(): int
     {
         return $this->keyId;
     }
@@ -179,10 +179,10 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
 
     /**
      * @param bool $connectable
-     * @param int|null $keyId
+     * @param int $keyId
      * @return $this
      */
-    public function setConnectableRows(bool $connectable=true, ?int $keyId=null): self
+    public function setConnectableRows(bool $connectable=true, int $keyId=1): self
     {
         $this->connectableRows = $connectable;
         if($this->connectableRows === true)

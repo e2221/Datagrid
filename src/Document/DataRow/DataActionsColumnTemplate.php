@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace e2221\Datagrid\Document\DataRow;
 
 use e2221\Datagrid\Actions\RowActions\RowActionCancel;
+use e2221\Datagrid\Actions\RowActions\RowActionConnectable;
 use e2221\Datagrid\Actions\RowActions\RowActionDraggable;
 use e2221\Datagrid\Actions\RowActions\RowActionEdit;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
@@ -24,9 +25,11 @@ class DataActionsColumnTemplate extends BaseElement
     protected RowActionSave $rowActionSave;
     protected ?RowActionSortable $rowActionSort=null;
     protected ?RowActionDraggable $rowActionDrag=null;
+    protected ?RowActionConnectable $rowActionConnect=null;
 
     protected bool $sortable=false;
     protected bool $draggable=false;
+    protected bool $connectable=false;
 
     public function __construct(Datagrid $datagrid, ?string $elName = null, ?array $attributes = null, ?string $textContent = null)
     {
@@ -50,7 +53,26 @@ class DataActionsColumnTemplate extends BaseElement
         return $this;
     }
 
-    public function setDraggable(bool $draggable): self
+    /**
+     * Set connectable
+     * @param bool $connectable
+     * @return DataActionsColumnTemplate
+     */
+    public function setConnectable(bool $connectable=true): self
+    {
+        $this->connectable = $connectable;
+        if($this->connectable)
+            $this->rowActionConnect = new RowActionConnectable('__connectable', 'Move');
+        $this->connectable = $connectable;
+        return $this;
+    }
+
+    /**
+     * Set draggable
+     * @param bool $draggable
+     * @return $this
+     */
+    public function setDraggable(bool $draggable=true): self
     {
         $this->draggable = $draggable;
         if($this->draggable === true)
@@ -120,7 +142,16 @@ class DataActionsColumnTemplate extends BaseElement
     }
 
     /**
-     * is row sortable
+     * Get connectable row button
+     * @return RowActionConnectable|null
+     */
+    public function getRowActionConnect(): ?RowActionConnectable
+    {
+        return $this->rowActionConnect;
+    }
+
+    /**
+     * Is row sortable?
      * @return bool
      */
     public function isRowSortable(): bool
@@ -128,9 +159,22 @@ class DataActionsColumnTemplate extends BaseElement
         return $this->sortable;
     }
 
+    /**
+     * Is row draggable
+     * @return bool
+     */
     public function isRowDraggable(): bool
     {
         return (bool)$this->rowActionDrag;
+    }
+
+    /**
+     * Is row connectable?
+     * @return bool
+     */
+    public function isRowConnectable(): bool
+    {
+        return (bool)$this->rowActionConnect;
     }
 
 }

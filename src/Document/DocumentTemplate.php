@@ -126,7 +126,7 @@ class DocumentTemplate
     {
         $this->connectableRows = $connectable;
         $this->tbodyTemplate->setConnectable($connectable);
-        $this->dataRowTemplate->getDataActionsColumnTemplate()->setSortable($connectable);
+        $this->dataRowTemplate->getDataActionsColumnTemplate()->setConnectable($connectable);
         return $this;
     }
 
