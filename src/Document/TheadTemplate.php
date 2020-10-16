@@ -8,5 +8,4 @@ use e2221\HtmElement\BaseElement;
 class TheadTemplate extends BaseElement
 {
     protected ?string $elName = 'thead';
-
 }

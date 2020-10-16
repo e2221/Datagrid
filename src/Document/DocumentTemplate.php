@@ -159,6 +159,7 @@ class DocumentTemplate
         $this->droppableRows = $droppable;
         if($this->droppableRows)
         {
+            $this->emptyDataTemplate->setDroppable($this->datagrid, $droppable, $droppableEffectClass, $scope);
             $this->tbodyTemplate->setDroppable($droppable, $droppableEffectClass);
             $this->dataRowTemplate->setDroppable($droppable, $scope);
         }
@@ -168,6 +169,7 @@ class DocumentTemplate
     /**
      * Set sticky all grid
      * @param bool $sticky
+     * @param int|null $stickyTopPosition
      * @return $this
      */
     public function setGridSticky(bool $sticky=true, ?int $stickyTopPosition=null): self

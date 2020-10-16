@@ -208,6 +208,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /**
      * Set rows draggable
      * @param bool $draggable
+     * @param string $scope
      * @return $this
      */
     public function setDraggable(bool $draggable=true, string $scope='datagrid-draggable-items'): self
@@ -217,13 +218,15 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
-     * Set rows dropable
-     * @param bool $dropable
+     * Set rows droppable
+     * @param bool $droppable
+     * @param string $dropEffectClass
+     * @param string $scope
      * @return $this
      */
-    public function setDroppable(bool $dropable=true, string $dropEffectClass='', string $scope='datagrid-draggable-items'): self
+    public function setDroppable(bool $droppable=true, string $dropEffectClass='', string $scope='datagrid-draggable-items'): self
     {
-        $this->documentTemplate->setDroppableRows($dropable, $dropEffectClass, $scope);
+        $this->documentTemplate->setDroppableRows($droppable, $dropEffectClass, $scope);
         return $this;
     }
 
