@@ -135,10 +135,24 @@ class ColumnExtended extends Column
         }
 
         $addHtml = is_callable($this->htmlCallback) ? call_user_func($this->htmlCallback, $row, $primary, $cell) : Html::el(null);
-        $addHtml->setText(is_callable($this->cellValueCallback) ? call_user_func($this->cellValueCallback, $row, $primary, $cell) : $cell);
+        $addHtml->setText($this->getValue($row, $primary, $cell));
 
         $html->addHtml($addHtml);
         return $html;
+    }
+
+    /**
+     * Get cell value
+     * @param $row
+     * @param int $primary
+     * @param $cell
+     * @return mixed
+     * @internal
+     * @ignore
+     */
+    public function getValue($row, int $primary, $cell)
+    {
+        return is_callable($this->cellValueCallback) ? call_user_func($this->cellValueCallback, $row, $primary, $cell) : $cell;
     }
 
     /**************************************************************************

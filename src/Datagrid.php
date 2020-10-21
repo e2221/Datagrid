@@ -51,6 +51,9 @@ use Nette\Utils\Random;
 
 class Datagrid extends \Nextras\Datagrid\Datagrid
 {
+    /** @var ColumnExtended */
+    protected $columns = [];
+
     /** @var bool is there at least one editable column? */
     private bool $isEditable = FALSE;
 
@@ -687,18 +690,21 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     {
         $data = [];
         foreach($this->columns as $columnName => $column)
-            $data[0][] = $column->label;
-        foreach($this->getData() as $rowID => $row)
-        {
-            $row = $row->toArray();
-            foreach($row as $columnName => $column)
-            {
-                if(!array_key_exists($columnName, $this->columns))
-                    unset($row[$columnName]);
-            }
-            $data[] = $row;
-        }
+            if($column->isHidden() === false)
+                $data[0][] = $column->label;
 
+        $primary = $this->getRowPrimaryKey();
+        foreach($this->getData(null, true) as $rowID => $row)
+        {
+            $rowData = [];
+            foreach ($this->columns as $columnName => $column)
+            {
+                if($column->isHidden() === true)
+                    continue;
+                $rowData[] = $column->getValue($row, (int)$row->$primary, $row->$columnName);
+            }
+            $data[] = $rowData;
+        }
         $export = new CsvExport($data, $this->exportFileName, 'utf-8', ';', true);
         $this->getPresenter()->sendResponse($export);
     }
@@ -767,10 +773,11 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     /**
      * Rewrite
      * @param null $key
+     * @param bool $fullResult  [true = ignore paginator]
      * @return mixed
      * @throws Exception
      */
-    protected function getData($key = null)
+    protected function getData($key = null, bool $fullResult=false)
     {
         if (!$this->data) {
             $onlyRow = $key !== null && $this->presenter->isAjax();
@@ -791,6 +798,8 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 if ($this->paginator->page !== $this->page) {
                     $this->paginator->page = $this->page = 1;
                 }
+                if($fullResult === true)
+                    $this->paginator->setItemsPerPage($itemsCount);
             }
 
             $this->data = call_user_func(
