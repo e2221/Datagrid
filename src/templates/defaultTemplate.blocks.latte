@@ -261,7 +261,7 @@
 {define pagination}
     <small>
         <nav aria-label="pagination">
-            <ul class="pagination">
+            <ul class="grid-pagination">
                 <li class="page-item {if $paginator->isFirst()}disabled{/if}" title="First">
                     <a class="page-link" href="{link paginate!, 'page'=>1}" tabindex="-1" {if $paginator->isFirst()}aria-disabled="true"{/if}><<</a>
                 </li>
