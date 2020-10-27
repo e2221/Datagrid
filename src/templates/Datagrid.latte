@@ -29,7 +29,9 @@
             $isEditable
             || $hasCustomActions
             || $hasRowCustomActions
-            || !is_null($dataActionsColumnTemplate->getRowActionItemDetail());
+            || !is_null($dataActionsColumnTemplate->getRowActionItemDetail())
+            || !is_null($dataActionsColumnTemplate->getRowActionDrag())
+            || !is_null($dataActionsColumnTemplate->getRowActionSort());
             $hasGlobalActionsColumn = isset($form['actions']);
             $hasTitleRow =
             !is_null($documentTemplate->getTitleRowTemplate()->getTitleTemplate())
