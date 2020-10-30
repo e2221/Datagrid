@@ -677,7 +677,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->setFile(__DIR__ . '/templates/Datagrid.latte');
 
         if(is_callable($this->onRender))
-            $this->onRender($this);
+            call_user_func($this->onRender, $this);
         $this->template->render();
     }
 
@@ -1094,6 +1094,15 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
                 return $form;
             });
         }
+    }
+
+    /**
+     * Is grid multiple filterable?
+     * @return bool
+     */
+    public function isMultipleFilterable(): bool
+    {
+        return $this->isMultipleFilterable;
     }
 }
 

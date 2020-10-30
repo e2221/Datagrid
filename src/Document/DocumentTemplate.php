@@ -89,7 +89,7 @@ class DocumentTemplate
         $this->theadTemplate = new TheadTemplate();
         $this->tbodyTemplate = new TbodyTemplate($datagrid);
         $this->tfootTemplate = new TfootTemplate();
-        $this->titleRowTemplate = new TitleRowTemplate();
+        $this->titleRowTemplate = new TitleRowTemplate($datagrid);
         $this->headRowTemplate = new HeadRowTemplate();
         $this->headFilterRowTemplate = new HeadFilterRowTemplate();
         $this->dataRowTemplate = new DataRowTemplate($datagrid);
