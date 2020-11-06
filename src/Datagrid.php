@@ -421,6 +421,18 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * Add column by instance of ColumnExtended
+     * @param ColumnExtended $column
+     * @return ColumnExtended
+     */
+    public function addColumnDirectly(ColumnExtended $column)
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $column->name;
+        return $this->columns[$column->name] = $column;
+    }
+
+    /**
      * Get column
      * @param  string $name
      * @return ColumnExtended
@@ -664,8 +676,9 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         $this->template->itemDetailColumnTemplate = $itemDetailRow->getItemDetailColumn();
 
         //from Nextras/datagrid
+        $data = $this->getData();
         $this->template->form = $this['form'];
-        $this->template->data = $this->getData();
+        $this->template->data = is_countable($data) ? $data : [];
         $this->template->columns = $this->columns;
         $this->template->editRowKey = $this->editRowKey;
         $this->template->rowPrimaryKey = $this->rowPrimaryKey;
