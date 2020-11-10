@@ -327,5 +327,14 @@ class RowAction extends UniversalAction
         }
     }
 
+    /**
+     * Get link callback
+     * @return callable|null
+     */
+    public function getLinkCallback(): ?callable
+    {
+        return $this->linkCallback;
+    }
+
 
 }

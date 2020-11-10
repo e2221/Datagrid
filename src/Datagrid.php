@@ -490,6 +490,16 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
     }
 
     /**
+     * Add directly row custom action
+     * @param RowCustomAction $rowCustomAction
+     * @return RowCustomAction
+     */
+    public function addRowCustomActionDirectly(RowCustomAction $rowCustomAction): RowCustomAction
+    {
+        return $this->rowCustomActions[$rowCustomAction->getName()] = $rowCustomAction;
+    }
+
+    /**
      * Row Action - Item detail setter
      * @param string $name
      * @param string $title

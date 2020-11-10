@@ -206,5 +206,14 @@ class UniversalAction
         return $a;
     }
 
+    /**
+     * Get name
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
 
 }
