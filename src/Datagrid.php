@@ -1046,10 +1046,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             $this->setFilterFormFactory(function () use ($filterableColumns) {
                 $form = new Container();
                 foreach($filterableColumns as $name => $column)
-                {
                     $form = $column->getFilterControl($form);
-                    //$form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterInputHtmlDecorations());
-                }
                 $form->addSubmit('filter', 'Filter');
                 $form->addSubmit('cancel', 'Cancel');
                 return $form;
@@ -1086,10 +1083,7 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             $this->multipleFilterFormFactory = function () use ($multipleColumns) {
                 $form = new Container();
                 foreach($multipleColumns as $name => $column)
-                {
                     $form = $column->getMultipleFilterControl($form);
-                    //$form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), false, $column->getEditSelection(), $column->getFilterMultipleHtmlDecorations());
-                }
                 $form->addSubmit('filterMultiple', 'Filter');
                 $form->addSubmit('cancelMultiple', 'Cancel');
                 return $form;
@@ -1126,23 +1120,17 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
         {
             $this->setEditFormFactory(function ($row) use ($editableColumns, $default){
                 $form = new Container();
-                $passwordsColumns = [];
                 foreach($editableColumns as $name => $column)
                 {
-                    //support for column password
-                    if($column->getHtmlType() == 'Password')
-                        $passwordsColumns[] = $name;
                     $form = $column->getEditControl($form);
-                    //$form = $this->formContainerGenerator($form, $name, $column->label, $column->getHtmlType(), $column->isRequired(), $column->getEditSelection(), $column->getEditInputHtmlDecorations());
                     if($row)
                         $default[$name] = $column->getEditValue($row);
                 }
                 $form->addSubmit('save', 'Save');
                 $form->addSubmit('cancel', 'Cancel');
                 if ($row) {
-                    $form->setDefaults($default);
-                    foreach($passwordsColumns as $column)
-                        $form[$column]->getControlPrototype()->value = $default[$column];
+                    foreach($editableColumns as $name => $column)
+                        $form[$name]->getControlPrototype()->value = $default[$name];
                 }
                 return $form;
             });
