@@ -247,13 +247,11 @@ class ColumnExtended extends Column
     /**
      * Sets selection (only if html type = select)
      * @param array $editSelection
-     * @return ColumnExtended
-     * @deprecated use method setSelection()
+     * @return void
+     * @deprecated use method setSelection in column select
      */
-    public function setEditSelection(array $editSelection): ColumnExtended
+    public function setEditSelection(array $editSelection): void
     {
-        $this->editSelection = $editSelection;
-        return $this;
     }
 
     /**

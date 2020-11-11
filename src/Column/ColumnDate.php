@@ -23,17 +23,6 @@ class ColumnDate extends ColumnExtended
     }
 
     /**
-     * @internal
-     * @ignore
-     * @param array $editSelection
-     * @return ColumnExtended
-     */
-    public function setEditSelection(array $editSelection): ColumnExtended
-    {
-        return parent::setEditSelection($editSelection);
-    }
-
-    /**
      * Add control date
      * @param Container $container
      * @return Container

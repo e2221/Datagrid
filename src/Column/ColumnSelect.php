@@ -23,12 +23,13 @@ class ColumnSelect extends ColumnExtended
     }
 
     /**
+     * Set selection
      * @param array $selection
      * @return $this
      */
     public function setSelection(array $selection): self
     {
-        $this->setEditSelection($selection);
+        $this->editSelection = $selection;
         return $this;
     }
 

@@ -29,17 +29,6 @@ class ColumnTextarea extends ColumnExtended
     }
 
     /**
-     * @internal
-     * @ignore
-     * @param array $editSelection
-     * @return ColumnExtended
-     */
-    public function setEditSelection(array $editSelection): ColumnExtended
-    {
-        return parent::setEditSelection($editSelection);
-    }
-
-    /**
      * Set number of cols
      * @param int $cols
      * @return $this
