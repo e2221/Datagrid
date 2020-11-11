@@ -8,6 +8,7 @@ use e2221\Datagrid\Actions\HeaderActions\CustomAction;
 use e2221\Datagrid\Actions\RowActions\RowActionItemDetail;
 use e2221\Datagrid\Actions\RowActions\RowCustomAction;
 use e2221\Datagrid\Column\ColumnDate;
+use e2221\Datagrid\Column\ColumnDateTimeLocal;
 use e2221\Datagrid\Column\ColumnEmail;
 use e2221\Datagrid\Column\ColumnExtended;
 use e2221\Datagrid\Column\ColumnNumber;
@@ -349,6 +350,20 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             $this->rowPrimaryKey = $name;
         $label = $label ? $this->translate($label) : ucfirst($name);
         return $this->columns[$name] = new ColumnDate($name, $label, $this);
+    }
+
+    /**
+     * Add Column date-time-local
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnDateTimeLocal
+     */
+    public function addColumnDatetimeLocal(string $name, ?string $label=null): ColumnDateTimeLocal
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnDateTimeLocal($name, $label, $this);
     }
 
     /**

@@ -18,7 +18,6 @@ class ColumnPrimary extends ColumnExtended
     public function __construct(string $name, string $label, Datagrid $grid)
     {
         parent::__construct($name, $label, $grid);
-        $this->setHtmlType('text');
         $this->setHidden();
         $grid->setRowPrimaryKey($name);
     }

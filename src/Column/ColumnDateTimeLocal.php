@@ -8,10 +8,10 @@ namespace e2221\Datagrid\Column;
 use Nette\Forms\Container;
 use Nextras\Datagrid\Datagrid;
 
-class ColumnNumber extends ColumnExtended
+class ColumnDateTimeLocal extends ColumnExtended
 {
     /**
-     * ColumnNumber constructor.
+     * ColumnDate constructor.
      * @param string $name
      * @param string|null $label
      * @param Datagrid $grid
@@ -22,16 +22,15 @@ class ColumnNumber extends ColumnExtended
     }
 
     /**
-     * Add control number
+     * Add control date
      * @param Container $container
      * @return Container
-     *
      * @internal
      */
     public function addControl(Container $container): Container
     {
         $control = $container->addText($this->name, $this->label);
-        $control->setHtmlType('number');
+        $control->setHtmlType('datetime-local');
         foreach($this->defaultInputAttributes as $attribute => $value)
             $control->setHtmlAttribute($attribute, $value);
         if($this->required)

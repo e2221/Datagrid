@@ -237,6 +237,7 @@ class ColumnExtended extends Column
      * Sets html type of column
      * @param string $htmlType
      * @return ColumnExtended
+     * @deprecated use typed columns instead
      */
     public function setHtmlType(string $htmlType='Text'): ColumnExtended
     {
