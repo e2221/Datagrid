@@ -11,6 +11,7 @@ use e2221\Datagrid\Column\ColumnDate;
 use e2221\Datagrid\Column\ColumnEmail;
 use e2221\Datagrid\Column\ColumnExtended;
 use e2221\Datagrid\Column\ColumnNumber;
+use e2221\Datagrid\Column\ColumnPassword;
 use e2221\Datagrid\Column\ColumnPrimary;
 use e2221\Datagrid\Column\ColumnSelect;
 use e2221\Datagrid\Column\ColumnText;
@@ -404,6 +405,20 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
             $this->rowPrimaryKey = $name;
         $label = $label ? $this->translate($label) : ucfirst($name);
         return $this->columns[$name] = new ColumnText($name, $label, $this);
+    }
+
+    /**
+     * Add column password
+     * @param string $name
+     * @param string|null $label
+     * @return ColumnPassword
+     */
+    public function addColumnPassword(string $name, ?string $label=null): ColumnPassword
+    {
+        if (!$this->rowPrimaryKey)
+            $this->rowPrimaryKey = $name;
+        $label = $label ? $this->translate($label) : ucfirst($name);
+        return $this->columns[$name] = new ColumnPassword($name, $label, $this);
     }
 
     /**
