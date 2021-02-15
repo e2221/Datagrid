@@ -1,3 +1,5 @@
+# DEPRACED use e2221/nette-grid instead
+
 # Datagrid with Nextras/datagrid core
 This is component for Nette 3 Framework.
 
