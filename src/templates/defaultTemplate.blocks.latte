@@ -329,7 +329,7 @@ BLOCKS ADDED
                     {continueIf $column->isHidden()}
                     {continueIf !$column->isMultipleFilterable()}
                     {if isset($form['filterMultiple'][$column->name])}
-                        {input $column->name autofocus=>'true'}
+                        {input $column->name}
                     {/if}
                 {/foreach}
                 <button type="submit" n:name="filterMultiple" class="btn btn-sm btn-outline-primary" title="Filter"><i class="fas fa-search"></i></button>

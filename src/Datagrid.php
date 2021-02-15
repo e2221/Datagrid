@@ -1114,24 +1114,26 @@ class Datagrid extends \Nextras\Datagrid\Datagrid
      */
     private function generateEditFormFactory(): void
     {
-        $default = [];
         $editableColumns = $this->getEditableColumns();
         if(count($editableColumns) > 0)
         {
-            $this->setEditFormFactory(function ($row) use ($editableColumns, $default){
+            $this->setEditFormFactory(function ($row) use ($editableColumns){
                 $form = new Container();
                 foreach($editableColumns as $name => $column)
                 {
                     $form = $column->getEditControl($form);
                     if($row)
-                        $default[$name] = $column->getEditValue($row);
+                    {
+                        if($form[$name]->getControlPrototype()->type == 'password')
+                        {
+                            $form[$name]->getControlPrototype()->value = $column->getEditValue($row);
+                        }else{
+                            $form[$name]->setDefaultValue($column->getEditValue($row));
+                        }
+                    }
                 }
                 $form->addSubmit('save', 'Save');
                 $form->addSubmit('cancel', 'Cancel');
-                if ($row) {
-                    foreach($editableColumns as $name => $column)
-                        $form[$name]->getControlPrototype()->value = $default[$name];
-                }
                 return $form;
             });
         }

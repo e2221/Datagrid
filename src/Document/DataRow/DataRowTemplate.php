@@ -88,7 +88,11 @@ class DataRowTemplate extends BaseElement
         $this->setAttribute('id', $rowID);
         $this->setDataAttribute('id', (string)$primary);
         if($this->draggable && is_callable($this->datagrid->getDragHelperCallback()))
-            $this->setDataAttribute('helper', call_user_func($this->datagrid->getDragHelperCallback(), $row, $primary));
+        {
+            $dragHelperCallback = $this->datagrid->getDragHelperCallback();
+            $dataValue = $dragHelperCallback($row, $primary);
+            $this->setDataAttribute('helper', $dataValue);
+        }
         return parent::render();
     }
 
